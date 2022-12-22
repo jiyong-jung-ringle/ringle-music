@@ -72,3 +72,5 @@ group :test do
 end
 
 gem "grape", "~> 1.7"
+
+gem "faker", "~> 3.0"
