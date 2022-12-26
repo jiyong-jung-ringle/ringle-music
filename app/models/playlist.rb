@@ -1,6 +1,5 @@
 class Playlist < ApplicationRecord
     has_many :music_playlists, dependent: :destroy
-
     has_many :musics, through: :music_playlists
     has_many :likes, as: :likable, dependent: :destroy 
     belongs_to :ownable, polymorphic: true
@@ -37,9 +36,6 @@ class Playlist < ApplicationRecord
         if playlist_count > @@maximum_musics_count
             target_musics = self.music_playlists.order(created_at: :asc).limit(playlist_count - @@maximum_musics_count)
             target_musics.destroy_all
-            return true
-        else
-            return false
         end
     end
 

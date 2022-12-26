@@ -1,6 +1,6 @@
 module V1
-    class TestApi < Grape::API
-        resource :test do
+    class MusicApi < Grape::API
+        resource :music do
             get do
                 return {
                     result: "hi"

@@ -27,14 +27,14 @@ class Group < ApplicationRecord
         self.append_users!(users: [user])
     end
 
-    def remove_users!(user_ids:)
+    def delete_users!(user_ids:)
         Group.transaction do
             self.user_groups.where(user_id: user_ids).destroy_all
         end
     end
 
-    def remove_user!(user_id:)
-        self.remove_users!(user_ids: [user_id])
+    def delete_user!(user_id:)
+        self.delete_users!(user_ids: [user_id])
     end
 
     def include_user?(user:)
