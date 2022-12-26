@@ -13,6 +13,7 @@
 ActiveRecord::Schema[7.0].define(version: 2022_12_22_042713) do
   create_table "groups", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
+    t.integer "users_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -30,10 +31,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_22_042713) do
   create_table "music_playlists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "music_id", null: false
     t.bigint "playlist_id", null: false
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["music_id"], name: "index_music_playlists_on_music_id"
     t.index ["playlist_id"], name: "index_music_playlists_on_playlist_id"
+    t.index ["user_id"], name: "index_music_playlists_on_user_id"
   end
 
   create_table "musics", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -46,10 +49,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_22_042713) do
   end
 
   create_table "playlists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
     t.integer "likes_count", default: 0
     t.string "ownable_type"
     t.bigint "ownable_id"
+    t.integer "musics_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ownable_type", "ownable_id"], name: "index_playlists_on_ownable"
