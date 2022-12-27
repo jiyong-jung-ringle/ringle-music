@@ -6,7 +6,7 @@ module V1
         version 'v1', using: :path
 
         namespace do
-            mount TestApi
+            mount MusicApi
         end
     end
 end
