@@ -1,5 +1,5 @@
 module FeedService
-    class MusicListGetter < ApplicationService
+    class MusicsGetter < ApplicationService
 
         def initialize(current_user, model, keyword, filter, offset, limit)
             @current_user = current_user
@@ -35,7 +35,7 @@ module FeedService
             @musics_liked = VirtualColumnService::IsLiked.call(@current_user, @model)
         end
         def get_order
-            @musics_ordered = OrderedModelGetter.call(@musics_liked, @keyword, @filter, [:song_name, :artist_name, :album_name])
+            @musics_ordered = OrderedModelGetter.call(@musics_liked, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
         end
 
         def get_total

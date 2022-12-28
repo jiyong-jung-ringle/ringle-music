@@ -29,25 +29,24 @@ Ringle Music에 대한 Toy Project입니다.
     - 좋아요 누른 음원 목록을 조회할 수 있어야함. => 이 때 역시 유저 이름을 통한 정확도순, 최신순으로 조회할 수 있어야함.
       - 최신순은 user의 '가입 순서'가 아닌 **'좋아요 누른 순서'**
 - 플레이리스트 음원 목록 API
-  - [ ] 음원 조회 API
+  - [x] 음원 조회 API
     - 정렬 방식
       - 정확도순
       - 인기순
       - 최신순
-  - [ ] 플레이리스트 조회 API
+      - (그룹의 경우) 누가 추가했는지 확인 가능
+      - 언제 추가했는지 확인 가능
+      - 플레이리스트에서 음원의 중복을 허용하는 만큼, 플레이리스트 내 음원의 삭제 시 identifier로 쓰임
+  - [x] 플레이리스트 조회 API
     - 정렬 방식
       - 인기순
       - 최신순
   - [ ] 추가/삭제(목록 상 중복 가능) API
-    - 플레이리스트의 소유자만 가능
+    - 플레이리스트의 소유자만 가능(개인 또는 그룹)
     - 최대 100개까지 등록 가능
-  - [ ] 좋아요 API
+  - [x] 좋아요 API
     - 유저가 플레이리스트에 좋아요 누를 수 있음
     - 좋아요 누른 플레이리스트 목록을 조회할 수 있어야함.
-  - [ ] 플레이리스트 내 음원의 정보 가져오기 API
-    - (그룹의 경우) 누가 추가했는지 확인 가능
-    - 언제 추가했는지 확인 가능
-    - 플레이리스트에서 음원의 중복을 허용하는 만큼, 플레이리스트 내 음원의 삭제 시 identifier로 쓰임
 - 그룹 만들기
   - [ ] 그룹 목록, 그룹 만들기, 인원 추가, 그룹 가입, 그룹 나가기 API
   - [ ] 그룹 플레이리스트 추가/삭제(목록 상 중복 가능) API
@@ -134,11 +133,14 @@ Ringle Music에 대한 Toy Project입니다.
 
 -2022.12.27 16:43
 
-# **구현된 API**
+# **현재 구현된 API**
+
+2022.12.28일 기준
 
 1. Music
+
    - 음원 조회 API -> **GET** /api/v1/music
-     - parameters:
+     - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
@@ -146,14 +148,14 @@ Ringle Music에 대한 Toy Project입니다.
      - return
        - total_musics_count: 총 음원의 갯수
        - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, Current User가 좋아요하였는지 여부를 담고 있음
-   - 좋아요 누르기 API -> **POST** /api/v1/music/{music_id}/like
+   - 좋아요 누르기 API -> **POST** /api/v1/music/**{music_id}**/like
      - return
        - 성공 여부
-   - 좋아요 취소 API -> **DELETE** /api/v1/music/{music_id}/like
+   - 좋아요 취소 API -> **DELETE** /api/v1/music/**{music_id}**/like
      - return
        - 성공 여부
-   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/music/{music_id}/like
-     - parameters:
+   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/music/**{music_id}**/like
+     - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
@@ -161,4 +163,30 @@ Ringle Music에 대한 Toy Project입니다.
           - 최신순은 **좋아요 누른 순서**로 정렬
      - return
        - total_likes_count: 총 좋아요 갯수
-       - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user id가 있음.
+       - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user_id가 있음.
+
+2. Music
+   - 플리 리스트 조회 API -> **GET** /api/v1/playlist
+     - parameters
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) filter : 최신순(recent), 인기순(popular)으로 정렬해줌.
+     - return
+       - total_playlists_count: 총 음원의 갯수
+       - playlists: 플리의 정보를 담는 배열, 플리 id, 좋아요 갯수, 소유권자 타입(유저/그룹) 및 소유 유저/그룹의 정보, Current User가 좋아요하였는지 여부를 포함.
+   - 좋아요 누르기 API -> **POST** /api/v1/playlist/**{playlist_id}**/like
+     - return
+       - 성공 여부
+   - 좋아요 취소 API -> **DELETE** /api/v1/playlist/**{playlist_id}**/like
+     - return
+       - 성공 여부
+   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/playlist/**{playlist_id}**/like
+     - parameters
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
+       4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
+          - 최신순은 **좋아요 누른 순서**로 정렬
+     - return
+       - total_likes_count: 총 좋아요 갯수
+       - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user_id가 있음.

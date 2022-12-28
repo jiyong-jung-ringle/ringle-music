@@ -21,7 +21,7 @@ module VirtualColumnService
         end
 
         def score_indicator(attribute_name)
-            "((#{@model.table_name}.#{attribute_name} LIKE '%#{@string}%')+('#{@string}' LIKE CONCAT('%', #{@model.table_name}.#{attribute_name}, '%'))+(#{@model.table_name}.#{attribute_name} LIKE '#{@string}'))/3"
+            "((#{attribute_name} LIKE '%#{@string}%')+('#{@string}' LIKE CONCAT('%', #{attribute_name}, '%'))+(#{attribute_name} LIKE '#{@string}'))/3"
         end
 
         def get_select_indicator

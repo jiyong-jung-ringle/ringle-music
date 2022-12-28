@@ -9,7 +9,7 @@ module V1
             end
             get do
                 current_user = User.third
-                musics = FeedService::MusicListGetter.call(current_user, Music, params[:keyword], params[:filter], params[:offset], params[:limit])
+                musics = FeedService::MusicsGetter.call(current_user, Music, params[:keyword], params[:filter], params[:offset], params[:limit])
                 return {
                     total_musics_count: musics[:total_musics_count],
                     musics: musics[:musics]
@@ -31,7 +31,7 @@ module V1
                     get do
                         current_user = User.third
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
-                        likes = FeedService::LikeListGetter.call(current_user, music, params[:keyword], params[:filter], params[:offset], params[:limit])
+                        likes = FeedService::LikesGetter.call(current_user, music, params[:keyword], params[:filter], params[:offset], params[:limit])
                         return {
                             total_likes_count: likes[:total_likes_count],
                             like_users: likes[:like_users]

@@ -1,5 +1,5 @@
 module FeedService
-    class LikeListGetter < ApplicationService
+    class LikesGetter < ApplicationService
 
         def initialize(current_user, likable, keyword, filter, offset, limit)
             @current_user = current_user
@@ -21,7 +21,7 @@ module FeedService
                     only: [
                         :user_id,
                         :name,
-                        :created_at
+                        :liked_at,
                     ]
                 })
             }
@@ -29,11 +29,12 @@ module FeedService
 
         private
         def get_liked_users
-            @users = @likable.likes.joins(:user).select(:id, :created_at, :name, :user_id)
+            @users = @likable.likes.joins(:user)
+            .select("#{User.table_name}.*, #{Like.table_name}.created_at AS liked_at")
         end
 
         def get_order
-            @users_ordered = OrderedModelGetter.call(@users, @keyword, @filter, [:name])
+            @users_ordered = OrderedModelGetter.call(@users, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
         end
 
         def get_total

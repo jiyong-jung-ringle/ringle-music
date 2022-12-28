@@ -1,10 +1,11 @@
 module FeedService
     class OrderedModelGetter < ApplicationService
 
-        def initialize(model, keyword=nil, filter, attribute_names)
+        def initialize(model, keyword=nil, filter, accepted_filters, attribute_names)
             @model = model
             @keyword = keyword
             @filter = filter
+            @accepted_filters = accepted_filters
             @attribute_names = attribute_names
         end
 
@@ -16,9 +17,8 @@ module FeedService
 
         private
         def check_attributes
-            attribute_names = @model.attribute_names
-            @has_created_at = attribute_names.include?("created_at")
-            @has_likes_count = attribute_names.include?("likes_count")
+            @has_created_at = @accepted_filters.include?(OrderFilterStatus::RECENT)
+            @has_likes_count = @accepted_filters.include?(OrderFilterStatus::POPULAR)
         end
 
         def get_order
