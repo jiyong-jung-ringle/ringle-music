@@ -123,13 +123,24 @@ Ringle Music에 대한 Toy Project입니다.
     - is_liked(api를 요청한 유저가 특정 Music 또는 playlist에 좋아요를 눌렀는지를 attribute "is_liked"에 추가해줌)
     - get_similarity_score(keyword에 맞게 score를 계산해서 attribute "score"에 추가해줌. ordering 시 사용)
       - 정확도를 구현하기 어려워 MySQL Like를 통해 구현하였는데, 이 역시 좋은 방법인지 모르겠습니다.
-  - Feed(음원 목록 검색 서비스)
+  - Feed Service(Feed 목록 검색 서비스)
     - order_filter_status(정렬 status 관리; 최신순:recent, 정확도순:exact, 인기순:popular)
     - ordered_model_getter(정렬된 model을 받아와줌)
       - get_similarity_score를 참고해서 정렬된 model을 return
-    - music_getter(음원 목록)
-      - ordered_model_getter 및 limit에 맞추어 음원 목록을 json 형식으로 return
+    - musics_getter(음원 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 음원 목록을 json 형식으로 return
       - 음원 목록 조회 API에서 사용됨
+    - likes_getter(좋아요한 유저 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 특정 음원/플리에 좋아요한 유저들의 목록을 json 형식으로 return
+    - playlists_getter(플리 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 플리 목록을 json 형식으로 return
+    - playlist_musics_getter(플리 내 음원 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 특정 플리 내 음원 목록을 json 형식으로 return
+  - Like Service(좋아요 서비스)
+    - like_action(좋아요 누르기, 좋아요 해제)
+      - status 저장
+    - modify_like(좋아요 서비스의 핵심)
+      - like_action 내 status에 맞게 좋아요 등록/해제 기능 수행
 
 -2022.12.27 16:43
 
