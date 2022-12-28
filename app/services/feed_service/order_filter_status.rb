@@ -1,4 +1,4 @@
-module Feed
+module FeedService
     module OrderFilterStatus
         RECENT = "recent"
         POPULAR = "popular"

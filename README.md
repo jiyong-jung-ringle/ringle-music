@@ -24,9 +24,10 @@ Ringle Music에 대한 Toy Project입니다.
       - 정확도순
       - 인기순
       - 최신순
-  - [ ] 좋아요 API
+  - [x] 좋아요 API
     - 유저가 음원에 좋아요 누를 수 있음
-    - 좋아요 누른 음원 목록을 조회할 수 있어야함.
+    - 좋아요 누른 음원 목록을 조회할 수 있어야함. => 이 때 역시 유저 이름을 통한 정확도순, 최신순으로 조회할 수 있어야함.
+      - 최신순은 user의 '가입 순서'가 아닌 **'좋아요 누른 순서'**
 - 플레이리스트 음원 목록 API
   - [ ] 음원 조회 API
     - 정렬 방식
@@ -132,3 +133,32 @@ Ringle Music에 대한 Toy Project입니다.
       - 음원 목록 조회 API에서 사용됨
 
 -2022.12.27 16:43
+
+# **구현된 API**
+
+1. Music
+   - 음원 조회 API -> **GET** /api/v1/music
+     - parameters:
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
+       4. (Optional) filter : 최신순(recent), 인기순(popular), 정확도순(exact)으로 정렬해줌.
+     - return
+       - total_musics_count: 총 음원의 갯수
+       - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, Current User가 좋아요하였는지 여부를 담고 있음
+   - 좋아요 누르기 API -> **POST** /api/v1/music/{music_id}/like
+     - return
+       - 성공 여부
+   - 좋아요 취소 API -> **DELETE** /api/v1/music/{music_id}/like
+     - return
+       - 성공 여부
+   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/music/{music_id}/like
+     - parameters:
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
+       4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
+          - 최신순은 **좋아요 누른 순서**로 정렬
+     - return
+       - total_likes_count: 총 좋아요 갯수
+       - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user id가 있음.

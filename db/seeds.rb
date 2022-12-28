@@ -57,6 +57,6 @@ playlists.map { |playlist|
 likable = musics + playlists
 users.map { |user|
     likes_per_user.sample.times {
-        Like.toggle_like(user: user, likable: likable.sample)
+        Like.toggle_like!(user: user, likable: likable.sample)
     }
 }
