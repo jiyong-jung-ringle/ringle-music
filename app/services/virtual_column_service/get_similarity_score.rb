@@ -1,4 +1,4 @@
-module VirtualColumn
+module VirtualColumnService
     class GetSimilarityScore < ApplicationService
 
         def initialize(model, string, attribute_names)

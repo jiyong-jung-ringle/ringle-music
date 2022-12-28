@@ -1,4 +1,4 @@
-module VirtualColumn
+module VirtualColumnService
     class IsLiked < ApplicationService
 
         def initialize(current_user, model)
