@@ -294,6 +294,14 @@ Ringle Music에 대한 Toy Project입니다.
      - error
        - Group does not exist: {group_id}가 잘못된 경우
        - Already joined: 이미 가입되어 있는 경우
+   - 그룹명 변경 API -> **PATCH** /api/v1/group/**{group_id}**
+     - parameters
+     1. (Require) name : 바꿀 그룹 이름
+     - return
+       - success: true
+     - error
+       - Group does not exist: {group_id}가 잘못된 경우
+       - Cannot modify group name: 그룹에 속해있지 않은 경우
    - 그룹 탈퇴 API -> **PUT** /api/v1/group/**{group_id}**
      - return
        - success: true
@@ -302,7 +310,7 @@ Ringle Music에 대한 Toy Project입니다.
        - Not joined this group: 이 그룹에 가입되어 있지 않은 경우
    - 그룹 만들기 API -> **POST** /api/v1/group
      - parameters
-       1. (requires) name : 그룹 이름
+       1. (Require) name : 그룹 이름
        2. (Optional) user_ids: 유저 아이디 배열
      - return
        - {만들어진 group id, playlist_id, 성공 유저들}

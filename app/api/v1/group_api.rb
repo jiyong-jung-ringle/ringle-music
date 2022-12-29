@@ -46,6 +46,18 @@ module V1
                         success: result[:"#{current_user.id}"]
                     }
                 end
+                params do
+                    requires :name, type: String
+                end
+                patch do
+                    current_user = User.third
+                    error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
+                    error!("Cannot modify group name") unless group.include_user?(user: current_user)
+                    GroupService::ChangeGroupName.call(current_user, group, params[:name])
+                    return {
+                        success: true
+                    }
+                end
 
 
                 resource :user do
