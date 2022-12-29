@@ -48,7 +48,7 @@ Ringle Music에 대한 Toy Project입니다.
     - 유저가 플레이리스트에 좋아요 누를 수 있음
     - 좋아요 누른 플레이리스트 목록을 조회할 수 있어야함.
 - 그룹 만들기
-  - [ ] 그룹 목록, , 그룹 만들기, 인원 추가, 그룹 가입, 그룹 나가기 API
+  - [x] 그룹 목록, 그룹명 변경, 그룹 만들기, 인원 추가, 그룹 가입, 그룹 나가기 API
   - [x] 그룹 플레이리스트 추가/삭제(목록 상 중복 가능) API -> 플레이리스트 API와 동일하게 구현되어 있음
     - 그룹 멤버만 가능
 - 그밖의 서비스를 위해 필요한 API
@@ -317,3 +317,50 @@ Ringle Music에 대한 Toy Project입니다.
      - error
        - cannot make group: 그룹이 될 유저 아이디가 모두 이상해서 그룹을 만들 수 없는 경우
          - current_user의 경우 user_ids에 없어도 만들어지는 그룹에 자동 가입됨.
+4. User
+   - 현재 유저 정보 조회 API -> **GET** /api/v1/user
+     - return
+       - users: 현재 유저 정보(id, name, created_at)
+     - error
+       - 에러를 리턴하지 않음
+   - 현재 유저 이름 변경 API -> **PATCH** /api/v1/user
+     - parameters
+       1. (Require) name : 바꿀 유저 이름
+     - return
+       - success: true
+     - error
+       - 에러를 리턴하지 않음
+   - 현재 유저가 좋아요한 음원 리스트 API -> **GET** /api/v1/user/like/music
+     - parameters
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
+       4. (Optional) filter : 최신순(recent), 인기순(popular), 정확도순(exact)으로 정렬해줌.
+          - 최신순은 좋아요 누른 순서
+     - return
+       - total_musics_count: 총 음원의 갯수
+       - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, 좋아요한 시간
+     - error
+       - 에러를 리턴하지 않음
+   - 현재 유저가 좋아요한 플리 리스트 API -> **GET** /api/v1/user/like/playlist
+     - parameters
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) filter : 최신순(recent), 인기순(popular)으로 정렬해줌.
+          - 최신순은 좋아요 누른 순서
+     - return
+       - total_playlists_count: 총 플리의 갯수
+       - playlists: 플리의 정보를 담은 배열, likes_count, 언제 좋아요하였는지, 플리 id
+     - error
+       - 에러를 리턴하지 않음
+   - 유저 리스트 API -> **GET** /api/v1/user/list
+     - parameters
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
+       4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
+     - return
+       - total_users_count: 총 유저 갯수
+       - users: 유저들의 정보. id, name, created_at
+     - error
+       - 에러를 리턴하지 않음

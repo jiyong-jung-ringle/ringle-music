@@ -7,7 +7,7 @@ module V1
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR], default: FeedService::OrderFilterStatus::POPULAR
             end
             get do
-                current_user = User.third
+                authenticate!
                 playlists = FeedService::PlaylistsGetter.call(current_user, params[:filter], params[:offset], params[:limit])
                 return {
                     total_playlists_count: playlists[:total_playlists_count],
@@ -26,7 +26,7 @@ module V1
                     optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                 end
                 get do
-                    current_user = User.third
+                    authenticate!
                     error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                     musics = FeedService::PlaylistMusicsGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:offset], params[:limit])
                     return {
@@ -38,7 +38,7 @@ module V1
                     requires :music_ids, type: Array[Integer]
                 end
                 post do
-                    current_user = User.third
+                    authenticate!
                     error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                     error!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
                     error!("Cannot add musics") unless result = PlaylistService::AddMusic.call(current_user, playlist, params[:music_ids])
@@ -50,7 +50,7 @@ module V1
                     requires :music_ids, type: Array[Integer]
                 end
                 delete do
-                    current_user = User.third
+                    authenticate!
                     error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                     error!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
                     error!("Cannot delete musics") unless result = PlaylistService::DeleteMusic.call(current_user, playlist, params[:music_ids])
@@ -67,7 +67,7 @@ module V1
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
                     get do
-                        current_user = User.third
+                        authenticate!
                         error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                         likes = FeedService::LikesGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:offset], params[:limit])
                         return {
@@ -77,7 +77,7 @@ module V1
                     end
 
                     post do
-                        current_user = User.third
+                        authenticate!
                         error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                         error!("Already liked") unless LikeService::CreateLike.call(current_user, playlist)
                         return {
@@ -86,7 +86,7 @@ module V1
                     end
 
                     delete do
-                        current_user = User.third
+                        authenticate!
                         error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                         error!("Already unliked") unless LikeService::DeleteLike.call(current_user, playlist)
                         return {

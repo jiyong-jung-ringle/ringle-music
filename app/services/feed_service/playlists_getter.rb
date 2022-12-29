@@ -31,7 +31,7 @@ module FeedService
                             ] 
                         } 
                     }
-                })
+                }).map {|json| json.merge!(is_liked: json["is_liked"]==1 ? true: false)}
             }
         end
 

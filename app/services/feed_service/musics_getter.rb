@@ -25,7 +25,7 @@ module FeedService
                         :likes_count,
                         :is_liked,
                     ]
-                })
+                }).map {|json| json.merge!(is_liked: json["is_liked"]==1 ? true: false)}
             }
         end
 

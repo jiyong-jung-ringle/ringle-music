@@ -8,7 +8,7 @@ module V1
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
             end
             get do
-                current_user = User.third
+                authenticate!
                 musics = FeedService::MusicsGetter.call(current_user, params[:keyword], params[:filter], params[:offset], params[:limit])
                 return {
                     total_musics_count: musics[:total_musics_count],
@@ -29,7 +29,7 @@ module V1
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
                     get do
-                        current_user = User.third
+                        authenticate!
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         likes = FeedService::LikesGetter.call(current_user, music, params[:keyword], params[:filter], params[:offset], params[:limit])
                         return {
@@ -39,7 +39,7 @@ module V1
                     end
 
                     post do
-                        current_user = User.third
+                        authenticate!
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         error!("Already liked") unless LikeService::CreateLike.call(current_user, music)
                         return {
@@ -48,7 +48,7 @@ module V1
                     end
 
                     delete do
-                        current_user = User.third
+                        authenticate!
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         error!("Already unliked") unless LikeService::DeleteLike.call(current_user, music)
                         return {
