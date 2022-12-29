@@ -137,12 +137,15 @@ Ringle Music에 대한 Toy Project입니다.
     - playlist_musics_getter(플리 내 음원 목록)
       - ordered_model_getter 및 offset, limit에 맞추어 특정 플리 내 음원 목록을 json 형식으로 return
   - Like Service(좋아요 서비스)
-    - like_action(좋아요 누르기, 좋아요 해제)
+    - like_action_status(좋아요 누르기, 좋아요 해제)
       - status 저장
-    - modify_like(좋아요 서비스의 핵심)
+    - do_like_action(좋아요 서비스의 핵심)
       - like_action 내 status에 맞게 좋아요 등록/해제 기능 수행
-
--2022.12.27 16:43
+  - Playlist Service(플레이리스트 서비스)
+    - playlist_action_status(음원 추가, 음원 삭제)
+      - status 저장
+    - do_playlist_action(플레이리스트 서비스의 핵심)
+      - playlist action 내 status에 맞게 음원 추가/삭제 기능 수행
 
 # **현재 구현된 API**
 
@@ -233,7 +236,8 @@ Ringle Music에 대한 Toy Project입니다.
      - error
        - Playlist does not exist: {playlist_id}가 잘못된 경우
    - 플리 내 음원 추가 API -> **POST** /api/v1/playlist/**{playlist_id}**
-     - parameters 5. (Require) music_ids : 추가할 음원의 id 배열
+     - parameters
+       1. (Require) music_ids : 추가할 음원의 id 배열
      - return
        - success: 보낸 music_ids에 대한 추가 결과를 boolean으로 표시한 object
      - error
@@ -241,7 +245,8 @@ Ringle Music에 대한 Toy Project입니다.
        - You cannot modify this playlist: 이 플리에 대한 소유권이 없는 경우(group 플리, 개인 플리)
        - Cannot add musics: parameter로 받은 음악이 **한개도** 존재하지 않는 경우
    - 플리 내 음원 삭제 API -> **DELETE** /api/v1/playlist/**{playlist_id}**
-     - parameters 5. (Require) music_ids : 삭제할 음원의 **플리 내 music id 배열**
+     - parameters
+       1. (Require) music_ids : 삭제할 음원의 **플리 내 music id 배열**
      - return
        - success: 보낸 music_ids에 대한 삭제 결과를 boolean으로 표시한 object
      - error
