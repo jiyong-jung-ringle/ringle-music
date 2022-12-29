@@ -350,7 +350,7 @@ Ringle Music에 대한 Toy Project입니다.
           - 최신순은 좋아요 누른 순서
      - return
        - total_playlists_count: 총 플리의 갯수
-       - playlists: 플리의 정보를 담은 배열, likes_count, 언제 좋아요하였는지, 플리 id
+       - playlists: 플리의 정보를 담은 배열, likes_count, 언제 좋아요하였는지, 플리 id, 플리 소유권자(유저/그룹)
      - error
        - 에러를 리턴하지 않음
    - 유저 리스트 API -> **GET** /api/v1/user/list
