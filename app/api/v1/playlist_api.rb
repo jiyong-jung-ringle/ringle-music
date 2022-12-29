@@ -34,6 +34,30 @@ module V1
                         musics: musics[:musics]
                     }
                 end
+                params do
+                    requires :music_ids, type: Array[Integer]
+                end
+                post do
+                    current_user = User.third
+                    error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                    error!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
+                    error!("Cannot add musics") unless result = PlaylistService::DoPlaylistAction.call(current_user, playlist, params[:music_ids], PlaylistService::PlaylistActionStatus::ADD)
+                    return {
+                        success: result
+                    }
+                end
+                params do
+                    requires :music_ids, type: Array[Integer]
+                end
+                delete do
+                    current_user = User.third
+                    error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                    error!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
+                    error!("Cannot delete musics") unless result = PlaylistService::DoPlaylistAction.call(current_user, playlist, params[:music_ids], PlaylistService::PlaylistActionStatus::DELETE)
+                    return {
+                        success: result
+                    }
+                end
 
                 resource :like do
                     params do
@@ -55,7 +79,7 @@ module V1
                     post do
                         current_user = User.third
                         error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                        error!("Alread liked") unless LikeService::ModifyLike.call(current_user, playlist, LikeService::LikeAction::POST)
+                        error!("Alread liked") unless LikeService::DoLikeAction.call(current_user, playlist, LikeService::LikeActionStatus::POST)
                         return {
                             success: true
                         }
@@ -64,7 +88,7 @@ module V1
                     delete do
                         current_user = User.third
                         error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                        error!("Alread unliked") unless LikeService::ModifyLike.call(current_user, playlist, LikeService::LikeAction::DELETE)
+                        error!("Alread unliked") unless LikeService::DoLikeAction.call(current_user, playlist, LikeService::LikeActionStatus::DELETE)
                         return {
                             success: true
                         }

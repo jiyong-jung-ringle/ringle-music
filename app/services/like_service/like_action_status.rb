@@ -1,5 +1,5 @@
 module LikeService
-    module LikeAction
+    module LikeActionStatus
         POST = "post"
         DELETE = "delete"
     end

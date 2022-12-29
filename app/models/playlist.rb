@@ -15,20 +15,25 @@ class Playlist < ApplicationRecord
                 )
             self.delete_old_musics!
         end
+        return musics.ids
     end
 
     def append_music!(user:, music:)
-        self.append_musics!(user: user, musics: [music])
+        return self.append_musics!(user: user, musics: [music])
     end
 
     def delete_musics!(music_ids:)
+        music_playlists = self.music_playlists.where(id: music_ids)
+        music_playlist_ids = music_playlists.ids
+        return false unless music_playlists.exists?
         Playlist.transaction do
-            self.music_playlists.where(music_id: music_ids).destroy_all
+            music_playlists.destroy_all
         end
+        return music_playlist_ids
     end
 
     def delete_music!(user:, music_id:)
-        self.delete_musics!(user: user, music_ids: [music_id])
+        return self.delete_musics!(user: user, music_ids: [music_id])
     end
 
     def delete_old_musics!
@@ -40,6 +45,6 @@ class Playlist < ApplicationRecord
     end
 
     def include_user?(user:)
-        self.ownable_type == User.to_s ? self.ownable == user : self.ownable.include_user?(user)
+        self.ownable_type == User.to_s ? self.ownable == user : self.ownable.include_user?(user: user)
     end
 end

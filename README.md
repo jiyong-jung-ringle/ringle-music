@@ -41,7 +41,7 @@ Ringle Music에 대한 Toy Project입니다.
     - 정렬 방식
       - 인기순
       - 최신순
-  - [ ] 추가/삭제(목록 상 중복 가능) API
+  - [x] 추가/삭제(목록 상 중복 가능) API
     - 플레이리스트의 소유자만 가능(개인 또는 그룹)
     - 최대 100개까지 등록 가능
   - [x] 좋아요 API
@@ -146,7 +146,7 @@ Ringle Music에 대한 Toy Project입니다.
 
 # **현재 구현된 API**
 
-2022.12.28일 기준
+2022.12.29일 기준
 
 1. Music
 
@@ -159,24 +159,34 @@ Ringle Music에 대한 Toy Project입니다.
      - return
        - total_musics_count: 총 음원의 갯수
        - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, Current User가 좋아요하였는지 여부를 담고 있음
+     - error
+       - 에러를 리턴하지 않음
    - 좋아요 누르기 API -> **POST** /api/v1/music/**{music_id}**/like
      - return
        - 성공 여부
+     - error
+       - Music does not exist: {music_id}가 잘못된 경우
+       - Already liked: 이미 좋아요를 누른 경우
    - 좋아요 취소 API -> **DELETE** /api/v1/music/**{music_id}**/like
      - return
        - 성공 여부
+     - - error
+       - Music does not exist: {music_id}가 잘못된 경우
+       - Already unliked: 이미 좋아요를 누르지 않은 경우
    - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/music/**{music_id}**/like
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
        4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
-          - 최신순은 **좋아요 누른 순서**로 정렬
+       - 최신순은 **좋아요 누른 순서**로 정렬
      - return
        - total_likes_count: 총 좋아요 갯수
        - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user_id가 있음.
+     - error
+       - Music does not exist: {music_id}가 잘못된 경우
 
-2. Music
+2. Playlist
    - 플리 리스트 조회 API -> **GET** /api/v1/playlist
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
@@ -185,19 +195,56 @@ Ringle Music에 대한 Toy Project입니다.
      - return
        - total_playlists_count: 총 음원의 갯수
        - playlists: 플리의 정보를 담는 배열, 플리 id, 좋아요 갯수, 소유권자 타입(유저/그룹) 및 소유 유저/그룹의 정보, Current User가 좋아요하였는지 여부를 포함.
+     - error
+       - 에러를 리턴하지 않음
    - 좋아요 누르기 API -> **POST** /api/v1/playlist/**{playlist_id}**/like
      - return
        - 성공 여부
+     - error
+       - Playlist does not exist: {playlist_id}가 잘못된 경우
+       - Already liked: 이미 좋아요를 누른 경우
    - 좋아요 취소 API -> **DELETE** /api/v1/playlist/**{playlist_id}**/like
      - return
        - 성공 여부
+     - error
+       - Playlist does not exist: {playlist_id}가 잘못된 경우
+       - Already liked: 이미 좋아요를 누른 경우
    - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/playlist/**{playlist_id}**/like
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
        4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
-          - 최신순은 **좋아요 누른 순서**로 정렬
+       - 최신순은 **좋아요 누른 순서**로 정렬
      - return
        - total_likes_count: 총 좋아요 갯수
        - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user_id가 있음.
+     - error
+       - Playlist does not exist: {playlist_id}가 잘못된 경우
+   - 플리 내 음원 조회 API -> **GET** /api/v1/playlist/**{playlist_id}**
+     - parameters
+       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
+       4. (Optional) filter : 최신순(recent), 인기순(popular), 정확도순(exact)으로 정렬해줌.
+     - return
+       - total_musics_count: 플리 내 총 음원의 갯수
+       - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, Current User가 좋아요하였는지, **누가 음원을 추가했는지** 여부를 담고 있음
+     - error
+       - Playlist does not exist: {playlist_id}가 잘못된 경우
+   - 플리 내 음원 추가 API -> **POST** /api/v1/playlist/**{playlist_id}**
+     - parameters 5. (Require) music_ids : 추가할 음원의 id 배열
+     - return
+       - success: 보낸 music_ids에 대한 추가 결과를 boolean으로 표시한 object
+     - error
+       - Playlist does not exist: {playlist_id}가 잘못된 경우
+       - You cannot modify this playlist: 이 플리에 대한 소유권이 없는 경우(group 플리, 개인 플리)
+       - Cannot add musics: parameter로 받은 음악이 **한개도** 존재하지 않는 경우
+   - 플리 내 음원 삭제 API -> **DELETE** /api/v1/playlist/**{playlist_id}**
+     - parameters 5. (Require) music_ids : 삭제할 음원의 **플리 내 music id 배열**
+     - return
+       - success: 보낸 music_ids에 대한 삭제 결과를 boolean으로 표시한 object
+     - error
+       - Playlist does not exist: {playlist_id}가 잘못된 경우
+       - You cannot modify this playlist: 이 플리에 대한 소유권이 없는 경우(group 플리, 개인 플리)
+       - Cannot delete musics: parameter로 받은 음악이 **한개도** 존재하지 않는 경우
