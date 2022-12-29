@@ -26,11 +26,14 @@ module PlaylistService
                     @success = false
                 end
             elsif @action==PlaylistActionStatus::DELETE
-                deleted_music_ids = @playlist.delete_musics!(music_ids: @music_ids)
-                @success = {}
-                @music_ids.map {|music_id|
-                    @success.merge!("#{music_id}": deleted_music_ids.include?(music_id))
-                }
+                unless deleted_music_ids = @playlist.delete_musics!(music_ids: @music_ids)
+                    @success = false
+                else
+                    @success = {}
+                    @music_ids.map {|music_id|
+                        @success.merge!("#{music_id}": deleted_music_ids.include?(music_id))
+                    }
+                end
             else
                 @success = false
             end

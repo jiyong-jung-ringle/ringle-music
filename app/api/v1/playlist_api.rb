@@ -8,7 +8,7 @@ module V1
             end
             get do
                 current_user = User.third
-                playlists = FeedService::PlaylistsGetter.call(current_user, Playlist, params[:filter], params[:offset], params[:limit])
+                playlists = FeedService::PlaylistsGetter.call(current_user, params[:filter], params[:offset], params[:limit])
                 return {
                     total_playlists_count: playlists[:total_playlists_count],
                     playlists: playlists[:playlists]

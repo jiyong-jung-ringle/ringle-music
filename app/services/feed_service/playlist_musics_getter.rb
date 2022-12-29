@@ -21,6 +21,7 @@ module FeedService
                 musics: @musics_result.includes(:user).as_json({
                     only: [
                         :id,
+                        :music_id,
                         :song_name,
                         :artist_name,
                         :album_name,

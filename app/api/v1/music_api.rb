@@ -9,7 +9,7 @@ module V1
             end
             get do
                 current_user = User.third
-                musics = FeedService::MusicsGetter.call(current_user, Music, params[:keyword], params[:filter], params[:offset], params[:limit])
+                musics = FeedService::MusicsGetter.call(current_user, params[:keyword], params[:filter], params[:offset], params[:limit])
                 return {
                     total_musics_count: musics[:total_musics_count],
                     musics: musics[:musics]

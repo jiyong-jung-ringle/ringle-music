@@ -41,7 +41,7 @@ user_count.times {
 users = User.all
 group_count.times {
     users_shuffled = users.shuffle[0..users_per_group.sample-1]
-    Group.create_group!(name: Faker::FunnyName.name, users: users_shuffled)
+    Group.create_group!(name: "#{Faker::FunnyName.name} Group", users: users_shuffled)
 }
 
 ## Append Musics in Playlists
