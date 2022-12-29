@@ -28,9 +28,14 @@ class Group < ApplicationRecord
     end
 
     def delete_users!(user_ids:)
+        user_groups = self.user_groups.where(user_id: user_ids)
+        deleted_user_ids = self.users.where(id: user_ids).ids
+        return false unless user_groups.exists?
         Group.transaction do
-            self.user_groups.where(user_id: user_ids).destroy_all
+            user_groups.destroy_all
+            self.delete_group! if self.users_count <= 0
         end
+        return deleted_user_ids
     end
 
     def delete_user!(user_id:)

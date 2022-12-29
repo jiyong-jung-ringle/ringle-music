@@ -41,7 +41,7 @@ module V1
                     post do
                         current_user = User.third
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
-                        error!("Alread liked") unless LikeService::DoLikeAction.call(current_user, music, LikeService::LikeActionStatus::POST)
+                        error!("Already liked") unless LikeService::CreateLike.call(current_user, music)
                         return {
                             success: true
                         }
@@ -50,7 +50,7 @@ module V1
                     delete do
                         current_user = User.third
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
-                        error!("Alread unliked") unless LikeService::DoLikeAction.call(current_user, music, LikeService::LikeActionStatus::DELETE)
+                        error!("Already unliked") unless LikeService::DeleteLike.call(current_user, music)
                         return {
                             success: true
                         }

@@ -31,7 +31,7 @@ module FeedService
 
         private
         def get_liked_musics
-            @musics_liked = VirtualColumnService::IsLiked.call(@current_user, Music)
+            @musics_liked = VirtualColumnService::IsLiked.call(@current_user, Music, Music)
         end
         def get_order
             @musics_ordered = OrderedModelGetter.call(@musics_liked, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])

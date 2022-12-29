@@ -8,6 +8,7 @@ module V1
         namespace do
             mount MusicApi
             mount PlaylistApi
+            mount GroupApi
         end
     end
 end

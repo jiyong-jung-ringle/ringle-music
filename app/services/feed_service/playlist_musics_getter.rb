@@ -48,14 +48,14 @@ module FeedService
         end
 
         def get_liked_musics
-            @musics_liked = VirtualColumnService::IsLiked.call(@current_user, @model)
+            @musics_liked = VirtualColumnService::IsLiked.call(@current_user, @model, Music)
         end
         def get_order
             @musics_ordered = OrderedModelGetter.call(@musics_liked, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
         end
 
         def get_total
-            @total = @playlist.musics.count()
+            @total = @playlist.musics_count
         end
 
         def get_musics
