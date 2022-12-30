@@ -13,7 +13,7 @@ module AuthService
             @payload = JWT.decode(@jwt, nil, false, {algorithm: 'RS256'})
         end
         def decode
-            @payload = JWT.decode(@jwt, SECRET_KEY, true, {algorithm: 'RS256'})
+            @payload = JWT.decode(@jwt, PUBLIC_KEY, true, {algorithm: 'RS256'})
         end
     end
 end
