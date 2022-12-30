@@ -7,12 +7,12 @@ module UserService
         end
 
         def call
-            get_user_info
+            change_name
             return @user_info
         end
 
         private
-        def get_user_info
+        def change_name
             @success = @current_user.change_name!(name: @name)
         end
 

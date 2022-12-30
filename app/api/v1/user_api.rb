@@ -9,15 +9,57 @@ module V1
                 }
             end
 
-            params do
-                requires :name, type: String
+            resource :password do
+                params do
+                    requires :new_password, type: String, values: {proc: ->(password) {password!=""}}
+                    requires :old_password, type: String, values: {proc: ->(password) {password!=""}}
+                end
+                patch do
+                    authenticate_with_password!(params[:old_password])
+                    UserService::ChangePassword.call(current_user, params[:new_password])
+                    return {
+                        success: true
+                    }
+                end
             end
-            patch do
-                authenticate!
-                UserService::ChangeName.call(current_user, params[:name])
-                return {
-                    success: true
-                }
+
+            resource :name do
+                params do
+                    requires :name, type: String
+                    requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                end
+                patch do
+                    authenticate_with_password!(params[:password])
+                    UserService::ChangeName.call(current_user, params[:name])
+                    return {
+                        success: true
+                    }
+                end
+            end
+
+            resource :signup do
+                params do
+                    requires :email, type: String, values: {proc: ->(name) {name!=""}}
+                    requires :name, type: String, values: {proc: ->(name) {name!=""}}
+                    requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                end
+                post do
+                    error!("Already signned. Please logout") if authenticate?
+                    error!("Please use different Email address") unless result = UserService::Signup.call(params[:email], params[:name], params[:password])
+                    return result
+                end
+            end
+
+            resource :signin do
+                params do
+                    requires :email, type: String, values: {proc: ->(name) {name!=""}}
+                    requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                end
+                get do
+                    error!("Already signned. Please logout") if authenticate?
+                    error!("Login Failed") unless result = UserService::Signin.call(params[:email], params[:password])
+                    return result
+                end
             end
 
             resource :like do

@@ -74,3 +74,8 @@ end
 gem "grape", "~> 1.7"
 
 gem "faker", "~> 3.0"
+
+gem "jwt", "~> 2.6"
+gem "openssl", "~> 3.1"
+
+gem "bcrypt", "~> 3.1"

@@ -17,6 +17,7 @@ module UserService
                     :id,
                     :name,
                     :created_at,
+                    :email,
                 ]
             })
         end

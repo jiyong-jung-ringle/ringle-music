@@ -19,6 +19,7 @@ module FeedService
                         :id,
                         :name,
                         :created_at,
+                        :password_digest,
                     ]
                 })
             }

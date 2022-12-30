@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_22_042713) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_30_064703) do
   create_table "groups", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.integer "users_count", default: 0
@@ -71,6 +71,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_22_042713) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password_digest"
+    t.string "email"
   end
 
   add_foreign_key "music_playlists", "musics"

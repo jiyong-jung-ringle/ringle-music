@@ -68,6 +68,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    bcrypt (3.1.18)
     bindex (0.8.1)
     bootsnap (1.15.0)
       msgpack (~> 1.2)
@@ -124,6 +125,7 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    jwt (2.6.0)
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -157,6 +159,7 @@ GEM
     nokogiri (1.13.10)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
+    openssl (3.1.0)
     public_suffix (5.0.1)
     puma (5.6.5)
       nio4r (~> 2.0)
@@ -242,6 +245,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt (~> 3.1)
   bootsnap
   capybara
   debug
@@ -249,7 +253,9 @@ DEPENDENCIES
   grape (~> 1.7)
   importmap-rails
   jbuilder
+  jwt (~> 2.6)
   mysql2 (~> 0.5)
+  openssl (~> 3.1)
   puma (~> 5.0)
   rails (~> 7.0.4)
   redis (~> 4.0)

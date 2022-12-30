@@ -55,10 +55,11 @@ module FeedService
             })
             owanble_hash = Hash.new
             ownable_ids.each { |data|
-                owanble_hash[data["ownable_type"]]==nil ? owanble_hash[data["ownable_type"]] = [data["ownable_id"]] : owanble_hash[data["ownable_type"]] = owanble_hash[data["ownable_type"]]+[data["ownable_id"]]
+                hash_data = data.with_indifferent_access
+                owanble_hash[hash_data[:ownable_type]]==nil ? owanble_hash[hash_data[:ownable_type]] = [hash_data[:ownable_id]] : owanble_hash[hash_data[:ownable_type]] = owanble_hash[hash_data[:ownable_type]]+[hash_data[:ownable_id]]
             }
-            ownable_user = User.where(id: owanble_hash[User.to_s])
-            ownable_group = Group.where(id: owanble_hash[Group.to_s])
+            ownable_user = ModelPreload.new(User, {id: owanble_hash[User.to_s]})
+            ownable_group = ModelPreload.new(Group, {id: owanble_hash[Group.to_s]})
             @musics_playlists_as_json = @musics_result.as_json({
                 only: [
                     :playlist_id,
@@ -75,13 +76,11 @@ module FeedService
                     ownable_type: json["ownable_type"],
                     ownable: case json["ownable_type"]
                         when User.to_s
-                            ownable_user
-                            .select{|user| user[:id]== json["ownable_id"]}
-                            &.as_json({only:[:id, :name]})[0]
+                            ownable_user.call(id: json["ownable_id"])
+                            &.as_json({only:[:id, :name]})
                         when Group.to_s
-                            ownable_group
-                            .select{|group| group[:id]== json["ownable_id"]}
-                            &.as_json({only:[:id, :name, :users_count]})[0]
+                            ownable_group.call(id: json["ownable_id"])
+                            &.as_json({only:[:id, :name, :users_count]})
                         else
                             nil
                         end

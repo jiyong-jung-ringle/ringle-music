@@ -15,6 +15,8 @@ Ringle Music에 대한 Toy Project입니다.
 - rake db:create
 - rake db:migrate
 - rake db:seed(10명의 User, 10개의 music, 3개의 group, 13개의 플레이리스트(10개의 User playlist, 13개의 group playlist), 랜덤 좋아요 추가 가능)
+- pem 파일은 테스팅을 위해 ignore하지 않았습니다.
+- JWT는 RS256 방식을 사용하며, ssl 인증서를 key로 사용합니다.
 
 ## 요구사항
 
@@ -52,7 +54,7 @@ Ringle Music에 대한 Toy Project입니다.
   - [x] 그룹 플레이리스트 추가/삭제(목록 상 중복 가능) API -> 플레이리스트 API와 동일하게 구현되어 있음
     - 그룹 멤버만 가능
 - 그밖의 서비스를 위해 필요한 API
-  - [ ] 유저 관련 API
+  - [x] 유저 관련 API
     - 회원가입
     - 인증(음원 추가/삭제를 위해 필요)
 
@@ -60,7 +62,8 @@ Ringle Music에 대한 Toy Project입니다.
 
 - [x] User
   - Attribute:
-    - name(유저명)
+    - name(유저명), password_digest(bcrypt 방식으로 암호화), email(로그인 시 사용)
+    - 비밀번호는 DB에서 저장되지 않도록 함.
   - 여러 Group과 many-to-many 관계
   - Like와 연결되어 있음(자신이 어디에 좋아요 눌렀는지 확인 가능)
   - 한 개의 플레이리스트를 가짐
@@ -141,6 +144,12 @@ Ringle Music에 대한 Toy Project입니다.
       - ordered_model_getter 및 offset, limit에 맞추어 그룹 목록을 json 형식으로 return
     - group_users_getter(그룹 내 유저 목록)
       - ordered_model_getter 및 offset, limit에 맞추어 그룹 내 유저 목록을 json 형식으로 return
+    - users_getter(유저 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 유저 목록을 json 형식으로 return
+    - like_musics_getter(좋아요한 음원 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 특정 유저가 좋아요한 음원 목록을 json 형식으로 return
+    - like_playlists_getter(좋아요한 음원 목록)
+      - ordered_model_getter 및 offset, limit에 맞추어 특정 유저가 좋아요한 플리 목록을 json 형식으로 return
   - Like Service(좋아요 서비스)
     - create_like
       - 좋아요 등록 기능 수행
@@ -158,10 +167,37 @@ Ringle Music에 대한 Toy Project입니다.
       - 그룹 가입 기능 수행
     - exit_group
       - 그룹 탈퇴 기능 수행
+  - Auth Service(인증 서비스)
+    - jwt_creator
+      - 유저의 정보를 담는 jwt 생성
+    - jwt_encoder/decoder
+    - jwt_validator
+      - jwt를 통해 user 정보 불러오기
+  - User Service(유저 서비스)
+    - change_name
+      - 유저 이름 변경
+    - change_password
+      - 유저 패스워드 변경
+    - get_info
+      - 특정 유저 정보 불러오기
+    - signin
+      - 이메일/비밀번호를 통해 올바른 유저 정보 및 jwt 불러오기
+    - signup
+      - 이메일/비밀번호를 통해 유저 생성
+  - Auth Service(인증 서비스)
+    - jwt_creator
+      - 유저 정보를 토대로 jwt 생성
+    - jwt_encoder/decoder
+    - jwt_validator
+      - jwt를 통해 user 정보 불러오기
+  - 그 외
+    - model_preload
+      - 모델 중 일부를 **한번에** 불러오도록 할 수 있는 서비스
+        - where과 같이 사용할 수 있음
 
 # **현재 구현된 API**
 
-2022.12.29일 기준
+2022.12.30일 기준
 
 1. Music
 
@@ -323,13 +359,22 @@ Ringle Music에 대한 Toy Project입니다.
        - users: 현재 유저 정보(id, name, created_at)
      - error
        - 에러를 리턴하지 않음
-   - 현재 유저 이름 변경 API -> **PATCH** /api/v1/user
+   - 현재 유저 이름 변경 API -> **PATCH** /api/v1/user/name
      - parameters
        1. (Require) name : 바꿀 유저 이름
+       2. (Require) password : 유저의 패스워드(확인용)
      - return
        - success: true
      - error
-       - 에러를 리턴하지 않음
+       - Unauthorized : 패스워드가 틀릴 때
+   - 현재 유저 비밀번호 변경 API -> **PATCH** /api/v1/user/password
+     - parameters
+       1. (Require) new_password : 바꿀 패스워드
+       2. (Require) old_password : 유저의 패스워드(확인용)
+     - return
+       - success: true
+     - error
+       - Unauthorized : 패스워드가 틀릴 때
    - 현재 유저가 좋아요한 음원 리스트 API -> **GET** /api/v1/user/like/music
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
@@ -364,3 +409,24 @@ Ringle Music에 대한 Toy Project입니다.
        - users: 유저들의 정보. id, name, created_at
      - error
        - 에러를 리턴하지 않음
+   - 회원가입 API -> **GET** /api/v1/user/signup
+     - parameters
+       1. (Require) email : 사용할 이메일 주소
+       2. (Require) name : 사용할 이름
+       3. (Require) password : 사용할 비밀번호
+     - return
+       - jwt
+       - user: 가입된 유저의 정보
+     - error
+       - Already signed. Please logout : 이미 로그인되어 있는 경우
+       - Please use different Email address : 이미 사용중인 이메일인 경우
+   - 로그인 API -> **GET** /api/v1/user/signin
+     - parameters
+       1. (Require) email : 이메일 주소
+       2. (Require) password : 비밀번호
+     - return
+       - jwt
+       - user: 유저의 정보
+     - error
+       - Already signed. Please logout : 이미 로그인되어 있는 경우
+       - Login Failed : 이메일/비밀번호가 틀린 경우

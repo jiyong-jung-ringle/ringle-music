@@ -28,8 +28,8 @@ musics = Music.all
 musics.map { |music| music.destroy }
 
 ## Make Users
-user_count.times { 
-    User.create_user!(name: Faker::Name.name) 
+1.upto(user_count) { |i|
+    User.create_user!(name: Faker::Name.name, email: "user_#{i}@gmail.com", password: "ringle#{i}") 
 }
 
 ## Make Musics
@@ -49,7 +49,7 @@ musics = Music.all
 playlists = Playlist.all
 playlists.map { |playlist|
     user = playlist.ownable_type == User.to_s ? playlist.ownable : playlist.ownable.users.first
-    musics_shuffled = musics.shuffle[0..musics_per_playlist.sample-1]
+    musics_shuffled = musics.order("RAND()").limit(musics_per_playlist.sample)
     playlist.append_musics!(user: user, musics: musics_shuffled)
 }
 
@@ -60,3 +60,5 @@ users.map { |user|
         Like.toggle_like!(user: user, likable: likable.sample)
     }
 }
+
+puts "Completed"
