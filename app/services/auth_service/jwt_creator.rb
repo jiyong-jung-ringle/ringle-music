@@ -1,7 +1,7 @@
 module AuthService
     class JwtCreator < ApplicationService
         def initialize(user)
-            @payload = {id: user.id, exp: (Time.now + 1.days).to_i}
+            @payload = {id: user.id, exp: (Time.now + 3.months).to_i}
         end
         def call
             create_jwt

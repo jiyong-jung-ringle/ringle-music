@@ -20,6 +20,7 @@ module FeedService
                         :id,
                         :likes_count,
                         :is_liked,
+                        :musics_count,
                         :ownable_type,
                     ],
                     include: { 
