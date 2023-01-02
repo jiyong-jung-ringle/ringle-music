@@ -11,12 +11,12 @@ require 'CSV'
 
 
 ## Parameters
-user_count = 10
-music_count = 100
+user_count = 100
+music_count = 1500
 group_count = 3
-users_per_group = (3..5).to_a
-musics_per_playlist = (8..20).to_a
-likes_per_user = (0..20).to_a
+users_per_group = (3..20).to_a
+musics_per_playlist = (30..100).to_a
+likes_per_user = (0..50).to_a
 
 ## Reset database
 users = User.all
