@@ -52,8 +52,8 @@ module FeedService
         end
 
         def get_liked_playlists
-            p @playlists_result.ids
-            @like_service = VirtualColumnService::IsLiked.new(@current_user, Playlist, @playlists_result.ids)
+            ids = @playlists_result.as_json.map{|v| v["id"]}
+            @like_service = VirtualColumnService::IsLiked.new(@current_user, Playlist, ids)
         end
     
     end

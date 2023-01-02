@@ -23,6 +23,7 @@ module FeedService
                         :artist_name,
                         :album_name,
                         :likes_count,
+                        :score,
                     ]
                 }).map { |json| 
                     @like_service.call(json, json["id"])
@@ -45,7 +46,8 @@ module FeedService
         end
 
         def get_liked_service
-            @like_service = VirtualColumnService::IsLiked.new(@current_user, Music, @musics_result.ids)
+            ids = @musics_result.as_json.map{|v| v["id"]}
+            @like_service = VirtualColumnService::IsLiked.new(@current_user, Music, ids)
         end
     
     end

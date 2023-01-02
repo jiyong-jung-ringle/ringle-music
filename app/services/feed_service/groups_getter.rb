@@ -43,7 +43,8 @@ module FeedService
         end
 
         def get_joined_groups
-            @is_joined_service = VirtualColumnService::IsJoined.new(@current_user, @groups_result.ids)
+            ids = @groups_result.as_json.map{|v| v["id"]}
+            @is_joined_service = VirtualColumnService::IsJoined.new(@current_user, ids)
         end
     
     end
