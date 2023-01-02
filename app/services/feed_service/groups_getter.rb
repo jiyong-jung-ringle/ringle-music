@@ -10,10 +10,10 @@ module FeedService
         end
 
         def call
-            get_joined_groups
             get_order
             get_total
             get_groups
+            get_joined_groups
             return {
                 total_groups_count: @total,
                 groups: @groups_result.as_json({
@@ -21,18 +21,16 @@ module FeedService
                         :id,
                         :name,
                         :users_count,
-                        :is_joined,
                     ]
-                })
+                }).map { |json| 
+                    @is_joined_service.call(json, json["id"])
+                }
             }
         end
 
         private
-        def get_joined_groups
-            @groups_joined = VirtualColumnService::IsJoined.call(@current_user, Group)
-        end
         def get_order
-            @groups_ordered = OrderedModelGetter.call(@groups_joined, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
+            @groups_ordered = OrderedModelGetter.call(Group, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
         end
 
         def get_total
@@ -42,6 +40,10 @@ module FeedService
         def get_groups
             @groups_result = (@groups_ordered.
                 offset(@limit*@offset).limit(@limit))
+        end
+
+        def get_joined_groups
+            @is_joined_service = VirtualColumnService::IsJoined.new(@current_user, @groups_result.ids)
         end
     
     end
