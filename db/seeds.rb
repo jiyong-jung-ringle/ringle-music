@@ -7,15 +7,16 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 require 'faker'
+require 'CSV'
 
 
 ## Parameters
 user_count = 10
-music_count = 10
+music_count = 100
 group_count = 3
 users_per_group = (3..5).to_a
-musics_per_playlist = (2..6).to_a
-likes_per_user = (0..7).to_a
+musics_per_playlist = (8..20).to_a
+likes_per_user = (0..20).to_a
 
 ## Reset database
 users = User.all
@@ -33,8 +34,12 @@ musics.map { |music| music.destroy }
 }
 
 ## Make Musics
-1.upto(music_count) { |i|
-    Music.create_music!(song_name: "Music #{i}", artist_name: Faker::Artist.name, album_name: Faker::Music.album) 
+sample_music_file =  Rails.root.join("config", "musics", "music.csv")
+music_csvs = CSV.parse(File.read(sample_music_file), :headers=>true)
+music_csv_sampled = music_csvs[0..(music_count-1)]
+music_csv_sampled.map { |music_csv|
+    music_csv = music_csv.to_hash
+    Music.create_music!(song_name: music_csv["title"], artist_name: music_csv["artist_name"], album_name: music_csv["album_name"]) 
 }
 
 ## Make Groups
