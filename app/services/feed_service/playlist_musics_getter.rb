@@ -21,12 +21,10 @@ module FeedService
                 musics: @musics_result.includes(:user).as_json({
                     only: [
                         :id,
-                        :music_id,
                         :song_name,
                         :artist_name,
                         :album_name,
                         :likes_count,
-                        :is_liked,
                         :added_at,
                     ],
                     include: { 
@@ -37,7 +35,9 @@ module FeedService
                             ] 
                         } 
                     }
-                }).map {|json| json.merge!(is_liked: json["is_liked"]==1 ? true: false)}
+                }).map {|json| 
+                    @like_service.call(json, json["id"])
+                }
             }
         end
 
