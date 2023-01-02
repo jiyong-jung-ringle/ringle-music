@@ -23,7 +23,6 @@ module FeedService
                         :artist_name,
                         :album_name,
                         :likes_count,
-                        :score,
                     ]
                 }).map { |json| 
                     @like_service.call(json, json["id"])

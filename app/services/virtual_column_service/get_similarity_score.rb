@@ -33,7 +33,8 @@ module VirtualColumnService
         end
 
         def score_indicator(attribute_name)
-            "((#{attribute_name} LIKE '%#{@string}%')+('#{@string}' LIKE CONCAT('%', #{attribute_name}, '%'))+(#{attribute_name} LIKE '#{@string}'))/3"
+            "(#{attribute_name} SOUNDS LIKE '#{@string}')/4 +
+            ((#{attribute_name} LIKE '%#{@string}%')+('#{@string}' LIKE CONCAT('%', #{attribute_name}, '%'))+(#{attribute_name} LIKE '#{@string}'))*3/4"
         end
 
         def get_select_indicator

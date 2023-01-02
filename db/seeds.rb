@@ -13,7 +13,7 @@ require 'CSV'
 ## Parameters
 user_count = 100
 music_count = 1500
-group_count = 3
+group_count = 30
 users_per_group = (3..20).to_a
 musics_per_playlist = (30..100).to_a
 likes_per_user = (0..50).to_a
@@ -29,11 +29,13 @@ musics = Music.all
 musics.map { |music| music.destroy }
 
 ## Make Users
+puts "Making #{user_count} Users..."
 1.upto(user_count) { |i|
     User.create_user!(name: Faker::Name.name, email: "user_#{i}@gmail.com", password: "ringle#{i}") 
 }
 
 ## Make Musics
+puts "Making #{music_count} Musics..."
 sample_music_file =  Rails.root.join("config", "musics", "music.csv")
 music_csvs = CSV.parse(File.read(sample_music_file), :headers=>true)
 music_csv_sampled = music_csvs[0..(music_count-1)]
@@ -43,6 +45,7 @@ music_csv_sampled.map { |music_csv|
 }
 
 ## Make Groups
+puts "Making #{group_count} Groups..."
 users = User.all
 group_count.times {
     users_shuffled = users.shuffle[0..users_per_group.sample-1]
@@ -50,6 +53,7 @@ group_count.times {
 }
 
 ## Append Musics in Playlists
+puts "Appending musics in Playlist..."
 musics = Music.all
 playlists = Playlist.all
 playlists.map { |playlist|
@@ -59,6 +63,7 @@ playlists.map { |playlist|
 }
 
 ## Make Likes
+puts "Making likes..."
 likable = musics + playlists
 users.map { |user|
     likes_per_user.sample.times {
