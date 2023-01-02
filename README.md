@@ -122,11 +122,11 @@ Ringle Music에 대한 Toy Project입니다.
         ex) GET http://localhost:3000/api/v1/music?limit=20&filter=exact
 
 - Application Service
-  - Virtual_column(추가적인 Attribute를 만들어주는 서비스) -> N+1 되는 것을 피하고자 직접 쿼리문 작성해서 하였는데 좋은 방법인지 모르겠습니다.
+  - Virtual_column(추가적인 Attribute를 만들어주는 서비스) -> ~~N+1 되는 것을 피하고자 직접 쿼리문 작성해서 하였는데 좋은 방법인지 모르겠습니다.~~  **ids를 통해 어느정도 쿼리문을 피하는 방향으로 해결**
     - is_liked(api를 요청한 유저가 특정 Music 또는 playlist에 좋아요를 눌렀는지를 attribute "is_liked"에 추가해줌)
     - is_joined(api를 요청한 유저가 특정 group에 가입되어 있는지를 attribute "is_joined"에 추가해줌)
     - get_similarity_score(keyword에 맞게 score를 계산해서 attribute "score"에 추가해줌. ordering 시 사용)
-      - 정확도를 구현하기 어려워 MySQL Like를 통해 구현하였는데, 이 역시 좋은 방법인지 모르겠습니다.
+      - 정확도를 구현하기 어려워 MySQL Like + SOUNDS LIKE를 통해 구현하였는데, 이 역시 좋은 방법인지 모르겠습니다.
   - Feed Service(Feed 목록 검색 서비스)
     - order_filter_status(정렬 status 관리; 최신순:recent, 정확도순:exact, 인기순:popular)
     - ordered_model_getter(정렬된 model을 받아와줌)
@@ -197,7 +197,7 @@ Ringle Music에 대한 Toy Project입니다.
 
 # **현재 구현된 API**
 
-2022.12.30일 기준
+2023.1.2일 기준
 
 1. Music
 
