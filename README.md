@@ -14,7 +14,7 @@ Ringle Music에 대한 Toy Project입니다.
 - bundle install
 - rake db:create
 - rake db:migrate
-- rake db:seed(10명의 User, 10개의 music, 3개의 group, 13개의 플레이리스트(10개의 User playlist, 13개의 group playlist), 랜덤 좋아요 추가 가능)
+- rake db:seed(100명의 User, 1500개의 music, 30개의 group, 130개의 플레이리스트(100개의 User playlist, 30개의 group playlist), 랜덤 좋아요 추가 가능)
 - pem 파일은 테스팅을 위해 ignore하지 않았습니다.
 - JWT는 RS256 방식을 사용하며, ssl 인증서를 key로 사용합니다.
 
