@@ -16,7 +16,7 @@ module V1
 
         def authenticate_with_password!(password)
             error!('Unauthorized') unless current_user
-            error!('Unauthorized') unless current_user.authenticate(password)
+            error!('Password Invalid') unless current_user.authenticate(password)
         end
 
         def authenticate?

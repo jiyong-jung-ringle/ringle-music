@@ -12,10 +12,10 @@ module FeedService
 
         def call
             get_playlist_musics
-            get_liked_musics
             get_order
             get_total
             get_musics
+            get_liked_musics
             return {
                 total_musics_count: @total,
                 musics: @musics_result.includes(:user).as_json({
@@ -44,14 +44,11 @@ module FeedService
         private
         def get_playlist_musics
             @model = @playlist.music_playlists.joins(:music)
-            .select("#{Music.table_name}.*, #{MusicPlaylist.table_name}.created_at AS added_at")
-        end
-
-        def get_liked_musics
-            @musics_liked = VirtualColumnService::IsLiked.call(@current_user, @model, Music)
+            .select("#{Music.table_name}.*, #{MusicPlaylist.table_name}.user_id, 
+                #{MusicPlaylist.table_name}.created_at AS added_at")
         end
         def get_order
-            @musics_ordered = OrderedModelGetter.call(@musics_liked, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
+            @musics_ordered = OrderedModelGetter.call(@model, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
         end
 
         def get_total
@@ -62,6 +59,9 @@ module FeedService
             @musics_result = (@musics_ordered.
                 offset(@limit*@offset).limit(@limit))
         end
-    
+
+        def get_liked_musics
+            @like_service = VirtualColumnService::IsLiked.new(@current_user, Music, @musics_result.pluck(:music_id))
+        end
     end
 end

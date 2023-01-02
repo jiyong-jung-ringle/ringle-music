@@ -71,23 +71,19 @@ module FeedService
                 ]
             }).map {|json|
                 json = json.with_indifferent_access
-                {
-                    playlist_id: json[:playlist_id],
-                    likes_count: json[:likes_count],
-                    liked_at: json[:liked_at],
-                    musics_count: json[:musics_count],
-                    ownable_type: json[:ownable_type],
-                    ownable: case json[:ownable_type]
-                        when User.to_s
-                            ownable_user.call(id: json[:ownable_id])
-                            &.as_json({only:[:id, :name]})
-                        when Group.to_s
-                            ownable_group.call(id: json[:ownable_id])
-                            &.as_json({only:[:id, :name, :users_count]})
-                        else
-                            nil
+                json.except(:ownable_id).merge!(
+                    ownable: 
+                        case json[:ownable_type]
+                            when User.to_s
+                                ownable_user.call(id: json[:ownable_id])
+                                &.as_json({only:[:id, :name]})
+                            when Group.to_s
+                                ownable_group.call(id: json[:ownable_id])
+                                &.as_json({only:[:id, :name, :users_count]})
+                            else
+                                nil
                         end
-                }
+                )
             }
         end
         
