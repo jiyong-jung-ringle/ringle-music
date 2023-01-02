@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_30_064703) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_02_065748) do
   create_table "groups", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.integer "users_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "group_name", type: :fulltext
   end
 
   create_table "likes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -46,6 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_064703) do
     t.integer "likes_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["song_name", "artist_name", "album_name"], name: "music_description", type: :fulltext
   end
 
   create_table "playlists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -73,6 +75,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_064703) do
     t.datetime "updated_at", null: false
     t.string "password_digest"
     t.string "email"
+    t.index ["name"], name: "user_name", type: :fulltext
   end
 
   add_foreign_key "music_playlists", "musics"
