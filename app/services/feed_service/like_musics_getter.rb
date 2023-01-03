@@ -14,21 +14,7 @@ module FeedService
             get_join_indicator
             get_liked_musics
             get_order
-            get_total
             get_musics
-            return {
-                total_musics_count: @total,
-                musics: @musics_result.as_json({
-                    only: [
-                        :music_id,
-                        :song_name,
-                        :artist_name,
-                        :album_name,
-                        :likes_count,
-                        :liked_at,
-                    ]
-                })
-            }
         end
 
         private
@@ -39,20 +25,30 @@ module FeedService
         end
         def get_liked_musics
             @musics = @user.likes.joins(@join_indicator)
-            .select("#{@model.table_name}.*, #{@likes_name}.created_at AS liked_at, #{@model.table_name}.id AS music_id")
+            .select("#{@model.table_name}.*, #{@likes_name}.created_at AS liked_at")
         end
 
         def get_order
             @musics_ordered = OrderedModelGetter.call(@musics, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
         end
 
-        def get_total
-            @total = @user.likes.where(likable_type: @model.to_s).count
-        end
-
         def get_musics
-            @musics_result = (@musics_ordered.
+            musics_result = (@musics_ordered.
                 offset(@limit*@offset).limit(@limit))
+            
+            {
+                total_musics_count: @user.likes.where(likable_type: @model.to_s).count,
+                musics: musics_result.as_json({
+                    only: [
+                        :id,
+                        :song_name,
+                        :artist_name,
+                        :album_name,
+                        :likes_count,
+                        :liked_at,
+                    ]
+                })
+            }
         end
         
     end

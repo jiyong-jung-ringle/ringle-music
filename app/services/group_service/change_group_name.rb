@@ -9,7 +9,6 @@ module GroupService
 
         def call
             do_action
-            return true
         end
         
         private

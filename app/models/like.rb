@@ -9,12 +9,20 @@ class Like < ApplicationRecord
     end
 
     def self.create_like!(user:, likable:)
-        like = Like.find_by(user: user, likable: likable)
-        like ? nil : Like.create!(user: user, likable: likable)
+        begin
+            like = Like.find_by(user: user, likable: likable)
+            like ? nil : Like.create!(user: user, likable: likable)
+        rescue =>e
+            nil
+        end
     end
 
     def self.destroy_like!(user:, likable:)
-        like = Like.find_by(user: user, likable: likable)
-        like ? like.destroy : nil
+        begin
+            like = Like.find_by(user: user, likable: likable)
+            like ? like.destroy : nil
+        rescue =>e
+            nil
+        end
     end
 end

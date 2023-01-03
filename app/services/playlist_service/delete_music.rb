@@ -9,18 +9,18 @@ module PlaylistService
 
         def call
             do_action
-            return @success
         end
 
         private
         def do_action
             unless deleted_music_ids = @playlist.delete_musics!(music_ids: @music_ids)
-                @success = false
+                false
             else
-                @success = {}
+                success = {}
                 @music_ids.map {|music_id|
-                    @success.merge!("#{music_id}": deleted_music_ids.include?(music_id))
+                    success.merge!("#{music_id}": deleted_music_ids.include?(music_id))
                 }
+                success
             end
         end
 

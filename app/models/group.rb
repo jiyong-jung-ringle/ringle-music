@@ -8,7 +8,11 @@ class Group < ApplicationRecord
     after_create GroupCallbacks
 
     def self.create_group!(name:, users:)
-        Group.create!(name: name, users: users)
+        begin
+            Group.create!(name: name, users: users)
+        rescue => e
+            nil
+        end
     end
 
     def delete_group!
@@ -16,8 +20,13 @@ class Group < ApplicationRecord
     end
 
     def change_name!(name:)
-        self.name = name
-        self.save
+        begin
+            self.name = name
+            self.save!
+            true
+        rescue => e
+            false
+        end
     end
 
     def append_users!(users:)

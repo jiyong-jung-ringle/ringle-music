@@ -13,37 +13,32 @@ module FeedService
         def call
             get_group_users
             get_order
-            get_total
             get_users
-            return {
-                total_users_count: @total,
-                users: @users_result.as_json({
-                    only: [
-                        :user_id,
-                        :name,
-                        :joined_at,
-                    ]
-                })
-            }
         end
 
         private
         def get_group_users
             @model = @group.user_groups.joins(:user)
-            .select("#{User.table_name}.*, #{UserGroup.table_name}.created_at AS joined_at, #{UserGroup.table_name}.user_id")
+            .select("#{User.table_name}.*, #{UserGroup.table_name}.created_at AS joined_at")
         end
 
         def get_order
             @users_ordered = OrderedModelGetter.call(@model, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
         end
 
-        def get_total
-            @total = @group.users_count
-        end
-
         def get_users
-            @users_result = (@users_ordered.
+            users_result = (@users_ordered.
                 offset(@limit*@offset).limit(@limit))
+            {
+                total_users_count: @group.users_count,
+                users: users_result.as_json({
+                    only: [
+                        :id,
+                        :name,
+                        :joined_at,
+                    ]
+                })
+            }
         end
     
     end

@@ -38,7 +38,8 @@ module VirtualColumnService
         end
 
         def get_select_indicator
-            @select_indicator = "`#{@model.table_name}`.*, #{@score_indicators} as score"
+            # @select_indicator = "`#{@model.table_name}`.*, #{@score_indicators} as score"
+            @select_indicator = "#{@score_indicators} as score"
         end
 
     end

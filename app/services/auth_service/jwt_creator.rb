@@ -5,11 +5,10 @@ module AuthService
         end
         def call
             create_jwt
-            return @jwt
         end
         private
         def create_jwt
-            @jwt = AuthService::JwtEncoder.call(@payload)
+            AuthService::JwtEncoder.call(@payload)
         end
     end
 end

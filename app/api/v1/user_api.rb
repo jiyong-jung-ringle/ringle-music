@@ -31,7 +31,7 @@ module V1
                     end
                     patch do
                         authenticate_with_password!(params[:old_password])
-                        UserService::ChangePassword.call(current_user, params[:new_password])
+                        error!("Cannot change password") unless UserService::ChangePassword.call(current_user, params[:new_password])
                         return {
                             success: true
                         }
@@ -45,7 +45,7 @@ module V1
                     end
                     patch do
                         authenticate_with_password!(params[:password])
-                        UserService::ChangeName.call(current_user, params[:name])
+                        error!("Cannot modify name") unless UserService::ChangeName.call(current_user, params[:name])
                         return {
                             success: true
                         }

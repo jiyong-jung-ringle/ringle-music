@@ -9,18 +9,18 @@ module GroupService
 
         def call
             do_action
-            return @success
         end
         
         private
         def do_action
             unless deleted_user_ids = @group.delete_users!(user_ids: @user_ids)
-                @success = false
+                false
             else
-                @success = {}
+                success = {}
                 @user_ids.map {|user_id|
-                    @success.merge!("#{user_id}": deleted_user_ids.include?(user_id))
+                    success.merge!("#{user_id}": deleted_user_ids.include?(user_id))
                 }
+                success
             end
         end
 

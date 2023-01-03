@@ -13,19 +13,6 @@ module FeedService
             get_order
             get_total
             get_groups
-            get_joined_groups
-            return {
-                total_groups_count: @total,
-                groups: @groups_result.as_json({
-                    only: [
-                        :id,
-                        :name,
-                        :users_count,
-                    ]
-                }).map { |json| 
-                    @is_joined_service.call(json, json["id"])
-                }
-            }
         end
 
         private
@@ -38,14 +25,23 @@ module FeedService
         end
 
         def get_groups
-            @groups_result = (@groups_ordered.
+            groups_result = (@groups_ordered.
                 offset(@limit*@offset).limit(@limit))
-        end
+            ids = groups_result.as_json.map{|v| v["id"]}
+            is_joined_service = VirtualColumnService::IsJoined.new(@current_user, ids)
 
-        def get_joined_groups
-            ids = @groups_result.as_json.map{|v| v["id"]}
-            @is_joined_service = VirtualColumnService::IsJoined.new(@current_user, ids)
-        end
-    
+            {
+                total_groups_count: @total,
+                groups: groups_result.as_json({
+                    only: [
+                        :id,
+                        :name,
+                        :users_count,
+                    ]
+                }).map { |json| 
+                    is_joined_service.call(json, json["id"])
+                }
+            }
+        end    
     end
 end

@@ -13,13 +13,7 @@ module FeedService
             get_join_indicator
             get_liked_playlists
             get_order
-            get_total
             get_playlists
-            as_json
-            return {
-                total_playlists_count: @total,
-                playlists: @musics_playlists_as_json
-            }
         end
 
         private
@@ -30,24 +24,17 @@ module FeedService
         end
         def get_liked_playlists
             @playlists = @user.likes.joins(@join_indicator)
-            .select("#{@model.table_name}.*, #{@likes_name}.created_at AS liked_at, #{@model.table_name}.id AS playlist_id")
+            .select("#{@model.table_name}.*, #{@likes_name}.created_at AS liked_at")
         end
 
         def get_order
             @playlists_ordered = OrderedModelGetter.call(@playlists, "", @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR], [])
         end
 
-        def get_total
-            @total = @user.likes.where(likable_type: @model.to_s).count
-        end
-
         def get_playlists
-            @musics_result = (@playlists_ordered.
+            musics_result = (@playlists_ordered.
                 offset(@limit*@offset).limit(@limit))
-        end
-
-        def as_json
-            ownable_ids = @musics_result.as_json({
+            ownable_ids = musics_result.as_json({
                 only: [
                     :ownable_type,
                     :ownable_id,
@@ -60,9 +47,9 @@ module FeedService
             }
             ownable_user = ModelPreload.new(User, {id: owanble_hash[User.to_s]})
             ownable_group = ModelPreload.new(Group, {id: owanble_hash[Group.to_s]})
-            @musics_playlists_as_json = @musics_result.as_json({
+            musics_playlists_as_json = musics_result.as_json({
                 only: [
-                    :playlist_id,
+                    :id,
                     :likes_count,
                     :liked_at,
                     :musics_count,
@@ -84,6 +71,10 @@ module FeedService
                                 nil
                         end
                 )
+            }
+            {
+                total_playlists_count: @user.likes.where(likable_type: @model.to_s).count,
+                playlists: musics_playlists_as_json
             }
         end
         

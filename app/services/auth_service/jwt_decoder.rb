@@ -5,7 +5,7 @@ module AuthService
         end
         def call(verify=true)
             verify ? decode : decode_without_verification
-            return @payload[0].with_indifferent_access
+            render_payload
         end
 
         private
@@ -14,6 +14,9 @@ module AuthService
         end
         def decode
             @payload = JWT.decode(@jwt, PUBLIC_KEY, true, {algorithm: 'RS256'})
+        end
+        def render_payload
+            @payload[0].with_indifferent_access
         end
     end
 end

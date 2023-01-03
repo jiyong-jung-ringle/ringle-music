@@ -8,12 +8,11 @@ module LikeService
 
         def call
             do_action
-            return @success
         end
 
         private
         def do_action
-            Like.destroy_like!(user: @current_user, likable: @likable)  ? @success = true : @success = false
+            Like.destroy_like!(user: @current_user, likable: @likable)
         end
 
     end

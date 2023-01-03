@@ -26,12 +26,23 @@ class User < ApplicationRecord
     end
 
     def change_name!(name:)
-        self.name = name
-        self.save
+        begin
+            self.name = name
+            self.save!
+            true
+        rescue => e
+            false
+        end
     end
 
     def change_password!(password:)
-        self.password = password
-        self.save
+        return false if password=="" || self.authenticate(password)
+        begin
+            self.password = password
+            self.save!
+            true
+        rescue => e
+            false
+        end 
     end
 end

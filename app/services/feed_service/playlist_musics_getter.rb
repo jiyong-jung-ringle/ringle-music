@@ -13,14 +13,30 @@ module FeedService
         def call
             get_playlist_musics
             get_order
-            get_total
             get_musics
-            get_liked_musics
-            return {
-                total_musics_count: @total,
-                musics: @musics_result.includes(:user).as_json({
+        end
+
+        private
+        def get_playlist_musics
+            @model = @playlist.music_playlists.joins(:music)
+            .select("#{Music.table_name}.*, #{MusicPlaylist.table_name}.user_id, #{MusicPlaylist.table_name}.id AS music_playlist_id, 
+                #{MusicPlaylist.table_name}.created_at AS added_at")
+        end
+        def get_order
+            @musics_ordered = OrderedModelGetter.call(@model, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
+        end
+
+        def get_musics
+            musics_result = (@musics_ordered.
+                offset(@limit*@offset).limit(@limit))
+            ids = musics_result.as_json.map{|v| v["id"]}
+            like_service = VirtualColumnService::IsLiked.new(@current_user, Music, ids)
+            {
+                total_musics_count: @playlist.musics_count,
+                musics: musics_result.includes(:user).as_json({
                     only: [
                         :id,
+                        :music_playlist_id,
                         :song_name,
                         :artist_name,
                         :album_name,
@@ -36,33 +52,9 @@ module FeedService
                         } 
                     }
                 }).map {|json| 
-                    @like_service.call(json, json["id"])
+                    like_service.call(json, json["id"])
                 }
             }
-        end
-
-        private
-        def get_playlist_musics
-            @model = @playlist.music_playlists.joins(:music)
-            .select("#{Music.table_name}.*, #{MusicPlaylist.table_name}.user_id, 
-                #{MusicPlaylist.table_name}.created_at AS added_at")
-        end
-        def get_order
-            @musics_ordered = OrderedModelGetter.call(@model, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
-        end
-
-        def get_total
-            @total = @playlist.musics_count
-        end
-
-        def get_musics
-            @musics_result = (@musics_ordered.
-                offset(@limit*@offset).limit(@limit))
-        end
-
-        def get_liked_musics
-            ids = @musics_result.as_json.map{|v| v["id"]}
-            @like_service = VirtualColumnService::IsLiked.new(@current_user, Music, ids)
         end
     end
 end

@@ -13,18 +13,7 @@ module FeedService
         def call
             get_liked_users
             get_order
-            get_total
             get_users
-            return {
-                total_likes_count: @total,
-                like_users: @users_result.as_json({
-                    only: [
-                        :user_id,
-                        :name,
-                        :liked_at,
-                    ]
-                })
-            }
         end
 
         private
@@ -37,13 +26,19 @@ module FeedService
             @users_ordered = OrderedModelGetter.call(@users, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
         end
 
-        def get_total
-            @total = @likable.likes_count
-        end
-
         def get_users
-            @users_result = (@users_ordered.
+            users_result = (@users_ordered.
                 offset(@limit*@offset).limit(@limit))
+            {
+                total_likes_count: @likable.likes_count,
+                like_users: users_result.as_json({
+                    only: [
+                        :id,
+                        :name,
+                        :liked_at,
+                    ]
+                })
+            }
         end
         
     end

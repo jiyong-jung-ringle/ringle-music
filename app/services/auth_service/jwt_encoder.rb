@@ -1,10 +1,13 @@
 module AuthService
     class JwtEncoder < ApplicationService
         def initialize(payload)
-            @jwt = JWT.encode(payload, SECRET_KEY, 'RS256')
+            @payload = payload
         end
         def call
-            return @jwt
+            encode_jwt
+        end
+        def encode_jwt
+            JWT.encode(@payload, SECRET_KEY, 'RS256')
         end
     end
 end

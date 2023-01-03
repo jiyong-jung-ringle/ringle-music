@@ -9,7 +9,6 @@ module GroupService
 
         def call
             do_action
-            return @success
         end
 
         private
@@ -17,13 +16,14 @@ module GroupService
             users = User.where(id: (@user_ids - @group.users.ids))
             if users.exists?
                 append_user_ids = @group.append_users!(users:users).ids
-                @success = {}
+                success = {}
                 user_ids = users.ids
                 @user_ids.map {|user_id|
-                    @success.merge!("#{user_id}": user_ids.include?(user_id))
+                    success.merge!("#{user_id}": user_ids.include?(user_id))
                 }
+                success
             else
-                @success = false
+                false
             end
         end
 

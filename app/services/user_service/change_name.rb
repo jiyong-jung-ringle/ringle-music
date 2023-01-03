@@ -8,12 +8,11 @@ module UserService
 
         def call
             change_name
-            return @user_info
         end
 
         private
         def change_name
-            @success = @current_user.change_name!(name: @name)
+            @current_user.change_name!(name: @name)
         end
 
     end

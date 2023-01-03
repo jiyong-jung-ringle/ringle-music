@@ -8,12 +8,11 @@ module UserService
 
         def call
             change_password
-            return @user_info
         end
 
         private
         def change_password
-            @success = @current_user.change_password!(password: @password)
+            @current_user.change_password!(password: @password)
         end
 
     end
