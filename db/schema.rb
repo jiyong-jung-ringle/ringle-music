@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_02_065748) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_03_052348) do
   create_table "groups", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.integer "users_count", default: 0
@@ -30,8 +30,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_02_065748) do
   end
 
   create_table "music_playlists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "music_id", null: false
-    t.bigint "playlist_id", null: false
+    t.bigint "music_id"
+    t.bigint "playlist_id"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -61,8 +61,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_02_065748) do
   end
 
   create_table "user_groups", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "group_id", null: false
+    t.bigint "user_id"
+    t.bigint "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["group_id"], name: "index_user_groups_on_group_id"
@@ -78,8 +78,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_02_065748) do
     t.index ["name"], name: "user_name", type: :fulltext
   end
 
+  add_foreign_key "likes", "users"
   add_foreign_key "music_playlists", "musics"
   add_foreign_key "music_playlists", "playlists"
+  add_foreign_key "music_playlists", "users"
   add_foreign_key "user_groups", "groups"
   add_foreign_key "user_groups", "users"
 end
