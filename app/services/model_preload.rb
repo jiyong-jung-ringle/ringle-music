@@ -5,11 +5,12 @@ class ModelPreload < ApplicationService
     end
 
     def call(indicator)
+        @indicator = indicator
         preload_model
     end
 
     def preload_model
-        indicator_array = indicator.map {|k, v| {"#{k}": v}}
+        indicator_array = @indicator.map {|k, v| {"#{k}": v}}
         @result = @model.select{ |entity|
             select_indicator = indicator_array.inject(true) {|cum, entry| 
                 cum &&
