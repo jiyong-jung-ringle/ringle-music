@@ -26,10 +26,7 @@ module V1
                 return result
             end
 
-            params do
-                requires :group_id, type: Integer
-            end
-            route_param :group_id do
+            route_param :group_id, type: Integer do
                 put do
                     authenticate!
                     error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])

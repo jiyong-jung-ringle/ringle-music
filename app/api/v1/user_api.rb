@@ -112,10 +112,7 @@ module V1
                 end
             end
 
-            params do
-                requires :user_id, type: Integer
-            end
-            route_param :user_id do
+            route_param :user_id, type: Integer do
                 get do
                     authenticate!
                     error!("User not found") unless user = User.find_by(id: params[:user_id])

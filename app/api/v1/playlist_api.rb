@@ -15,10 +15,7 @@ module V1
                 }
             end
 
-            params do
-                requires :playlist_id, type: Integer
-            end
-            route_param :playlist_id do
+            route_param :playlist_id, type: Integer do
                 params do
                     optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                     optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0

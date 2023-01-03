@@ -16,10 +16,7 @@ module V1
                 }
             end
 
-            params do
-                requires :music_id, type: Integer
-            end
-            route_param :music_id do
+            route_param :music_id, type: Integer do
                 resource :likes do
 
                     params do
