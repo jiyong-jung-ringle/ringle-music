@@ -38,7 +38,7 @@ module FeedService
         end
 
         def get_total
-            @total = @user.likes.where(likable_type: @model.to_s).count()
+            @total = @user.likes.where(likable_type: @model.to_s).count
         end
 
         def get_playlists

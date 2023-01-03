@@ -34,7 +34,7 @@ module FeedService
         end
 
         def get_total
-            @total = Group.count()
+            @total = Group.count
         end
 
         def get_groups

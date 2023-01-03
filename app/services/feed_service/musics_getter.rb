@@ -36,7 +36,7 @@ module FeedService
         end
 
         def get_total
-            @total = Music.count()
+            @total = Music.count
         end
 
         def get_musics

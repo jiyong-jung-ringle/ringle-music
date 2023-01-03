@@ -31,7 +31,7 @@ module FeedService
         end
 
         def get_total
-            @total = User.count()
+            @total = User.count
         end
 
         def get_users
