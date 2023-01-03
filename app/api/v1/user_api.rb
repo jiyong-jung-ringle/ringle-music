@@ -1,39 +1,55 @@
 module V1
     class UserApi < Grape::API
-        resource :user do
+        resource :users do
+            params do
+                optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
+                optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                optional :keyword, type: String
+                optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
+            end
             get do
                 authenticate!
-                user_info = UserService::GetInfo::call(current_user)
+                users = FeedService::UsersGetter.call(params[:keyword], params[:filter], params[:offset], params[:limit])
                 return {
-                    user: user_info
+                    total_users_count: users[:total_users_count],
+                    users: users[:users]
                 }
             end
-
-            resource :password do
-                params do
-                    requires :new_password, type: String, values: {proc: ->(password) {password!=""}}
-                    requires :old_password, type: String, values: {proc: ->(password) {password!=""}}
-                end
-                patch do
-                    authenticate_with_password!(params[:old_password])
-                    UserService::ChangePassword.call(current_user, params[:new_password])
+            resource :info do
+                get do
+                    authenticate!
+                    user_info = UserService::GetInfo::call(current_user)
                     return {
-                        success: true
+                        user: user_info
                     }
                 end
-            end
 
-            resource :name do
-                params do
-                    requires :name, type: String
-                    requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                resource :password do
+                    params do
+                        requires :new_password, type: String, values: {proc: ->(password) {password!=""}}
+                        requires :old_password, type: String, values: {proc: ->(password) {password!=""}}
+                    end
+                    patch do
+                        authenticate_with_password!(params[:old_password])
+                        UserService::ChangePassword.call(current_user, params[:new_password])
+                        return {
+                            success: true
+                        }
+                    end
                 end
-                patch do
-                    authenticate_with_password!(params[:password])
-                    UserService::ChangeName.call(current_user, params[:name])
-                    return {
-                        success: true
-                    }
+
+                resource :name do
+                    params do
+                        requires :name, type: String
+                        requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                    end
+                    patch do
+                        authenticate_with_password!(params[:password])
+                        UserService::ChangeName.call(current_user, params[:name])
+                        return {
+                            success: true
+                        }
+                    end
                 end
             end
 
@@ -62,8 +78,8 @@ module V1
                 end
             end
 
-            resource :like do
-                resource :music do
+            resource :likes do
+                resource :musics do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                         optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
@@ -79,7 +95,7 @@ module V1
                         }
                     end
                 end
-                resource :playlist do
+                resource :playlists do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                         optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
@@ -93,23 +109,6 @@ module V1
                             playlists: playlists[:playlists]
                         }
                     end
-                end
-            end
-
-            resource :list do
-                params do
-                    optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                    optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
-                    optional :keyword, type: String
-                    optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
-                end
-                get do
-                    authenticate!
-                    users = FeedService::UsersGetter.call(params[:keyword], params[:filter], params[:offset], params[:limit])
-                    return {
-                        total_users_count: users[:total_users_count],
-                        users: users[:users]
-                    }
                 end
             end
 

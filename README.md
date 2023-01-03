@@ -201,7 +201,7 @@ Ringle Music에 대한 Toy Project입니다.
 
 1. Music
 
-   - 음원 조회 API -> **GET** /api/v1/music
+   - 음원 조회 API -> **GET** /api/v1/musics
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -212,19 +212,19 @@ Ringle Music에 대한 Toy Project입니다.
        - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, Current User가 좋아요하였는지 여부를 담고 있음
      - error
        - 에러를 리턴하지 않음
-   - 좋아요 누르기 API -> **POST** /api/v1/music/**{music_id}**/like
+   - 좋아요 누르기 API -> **POST** /api/v1/musics/**{music_id}**/likes
      - return
        - 성공 여부
      - error
        - Music does not exist: {music_id}가 잘못된 경우
        - Already liked: 이미 좋아요를 누른 경우
-   - 좋아요 취소 API -> **DELETE** /api/v1/music/**{music_id}**/like
+   - 좋아요 취소 API -> **DELETE** /api/v1/musics/**{music_id}**/likes
      - return
        - 성공 여부
      - error
        - Music does not exist: {music_id}가 잘못된 경우
        - Already unliked: 이미 좋아요를 누르지 않은 경우
-   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/music/**{music_id}**/like
+   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/musics/**{music_id}**/likes
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -238,7 +238,7 @@ Ringle Music에 대한 Toy Project입니다.
        - Music does not exist: {music_id}가 잘못된 경우
 
 2. Playlist
-   - 플리 리스트 조회 API -> **GET** /api/v1/playlist
+   - 플리 리스트 조회 API -> **GET** /api/v1/playlists
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -248,19 +248,19 @@ Ringle Music에 대한 Toy Project입니다.
        - playlists: 플리의 정보를 담는 배열, 플리 id, 좋아요 갯수, 소유권자 타입(유저/그룹) 및 소유 유저/그룹의 정보, Current User가 좋아요하였는지 여부를 포함.
      - error
        - 에러를 리턴하지 않음
-   - 좋아요 누르기 API -> **POST** /api/v1/playlist/**{playlist_id}**/like
+   - 좋아요 누르기 API -> **POST** /api/v1/playlists/**{playlist_id}**/likes
      - return
        - 성공 여부
      - error
        - Playlist does not exist: {playlist_id}가 잘못된 경우
        - Already liked: 이미 좋아요를 누른 경우
-   - 좋아요 취소 API -> **DELETE** /api/v1/playlist/**{playlist_id}**/like
+   - 좋아요 취소 API -> **DELETE** /api/v1/playlists/**{playlist_id}**/likes
      - return
        - 성공 여부
      - error
        - Playlist does not exist: {playlist_id}가 잘못된 경우
        - Already liked: 이미 좋아요를 누른 경우
-   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/playlist/**{playlist_id}**/like
+   - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/playlists/**{playlist_id}**/likes
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -272,7 +272,7 @@ Ringle Music에 대한 Toy Project입니다.
        - like_users: 좋아요 누른 유저 정보를 담고 있는 배열. name과 user_id가 있음.
      - error
        - Playlist does not exist: {playlist_id}가 잘못된 경우
-   - 플리 내 음원 조회 API -> **GET** /api/v1/playlist/**{playlist_id}**
+   - 플리 내 음원 조회 API -> **GET** /api/v1/playlists/**{playlist_id}**
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -283,7 +283,7 @@ Ringle Music에 대한 Toy Project입니다.
        - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, Current User가 좋아요하였는지, **누가 음원을 추가했는지** 여부를 담고 있음
      - error
        - Playlist does not exist: {playlist_id}가 잘못된 경우
-   - 플리 내 음원 추가 API -> **POST** /api/v1/playlist/**{playlist_id}**
+   - 플리 내 음원 추가 API -> **POST** /api/v1/playlists/**{playlist_id}**
      - parameters
        1. (Require) music_ids : 추가할 음원의 id 배열
      - return
@@ -302,7 +302,7 @@ Ringle Music에 대한 Toy Project입니다.
        - You cannot modify this playlist: 이 플리에 대한 소유권이 없는 경우(group 플리, 개인 플리)
        - Cannot delete musics: parameter로 받은 음악이 **한개도** 존재하지 않는 경우
 3. Group
-   - 그룹 리스트 조회 API -> **GET** /api/v1/group
+   - 그룹 리스트 조회 API -> **GET** /api/v1/groups
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -313,7 +313,7 @@ Ringle Music에 대한 Toy Project입니다.
        - groups: 그룹의 정보를 담는 배열. 그룹 id, 이름, 가입된 유저 수, Current User의 그룹 가입 여부를 담고 있음
      - error
        - 에러를 리턴하지 않음
-   - 그룹 내 유저 조회 API -> **GET** /api/v1/group/**{group_id}**/user
+   - 그룹 내 유저 조회 API -> **GET** /api/v1/groups/**{group_id}**/users
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -324,13 +324,13 @@ Ringle Music에 대한 Toy Project입니다.
        - users: 유저의 정보를 담는 배열. 유저 id, 이름, 가입 날짜를 담고 있음
      - error
        - Group does not exist: {group_id}가 잘못된 경우
-   - 그룹 가입 API -> **PUT** /api/v1/group/**{group_id}**
+   - 그룹 가입 API -> **PUT** /api/v1/groups/**{group_id}**
      - return
        - success: true
      - error
        - Group does not exist: {group_id}가 잘못된 경우
        - Already joined: 이미 가입되어 있는 경우
-   - 그룹명 변경 API -> **PATCH** /api/v1/group/**{group_id}**
+   - 그룹명 변경 API -> **PATCH** /api/v1/groups/**{group_id}**
      - parameters
      1. (Require) name : 바꿀 그룹 이름
      - return
@@ -338,13 +338,13 @@ Ringle Music에 대한 Toy Project입니다.
      - error
        - Group does not exist: {group_id}가 잘못된 경우
        - Cannot modify group name: 그룹에 속해있지 않은 경우
-   - 그룹 탈퇴 API -> **PUT** /api/v1/group/**{group_id}**
+   - 그룹 탈퇴 API -> **DELETE** /api/v1/groups/**{group_id}**
      - return
        - success: true
      - error
        - Group does not exist: {group_id}가 잘못된 경우
        - Not joined this group: 이 그룹에 가입되어 있지 않은 경우
-   - 그룹 만들기 API -> **POST** /api/v1/group
+   - 그룹 만들기 API -> **POST** /api/v1/groups
      - parameters
        1. (Require) name : 그룹 이름
        2. (Optional) user_ids: 유저 아이디 배열
@@ -354,12 +354,12 @@ Ringle Music에 대한 Toy Project입니다.
        - cannot make group: 그룹이 될 유저 아이디가 모두 이상해서 그룹을 만들 수 없는 경우
          - current_user의 경우 user_ids에 없어도 만들어지는 그룹에 자동 가입됨.
 4. User
-   - 현재 유저 정보 조회 API -> **GET** /api/v1/user
+   - 현재 유저 정보 조회 API -> **GET** /api/v1/users/info
      - return
        - users: 현재 유저 정보(id, name, created_at)
      - error
        - 에러를 리턴하지 않음
-   - 현재 유저 이름 변경 API -> **PATCH** /api/v1/user/name
+   - 현재 유저 이름 변경 API -> **PATCH** /api/v1/users/info/name
      - parameters
        1. (Require) name : 바꿀 유저 이름
        2. (Require) password : 유저의 패스워드(확인용)
@@ -367,7 +367,7 @@ Ringle Music에 대한 Toy Project입니다.
        - success: true
      - error
        - Unauthorized : 패스워드가 틀릴 때
-   - 현재 유저 비밀번호 변경 API -> **PATCH** /api/v1/user/password
+   - 현재 유저 비밀번호 변경 API -> **PATCH** /api/v1/users/info/password
      - parameters
        1. (Require) new_password : 바꿀 패스워드
        2. (Require) old_password : 유저의 패스워드(확인용)
@@ -375,7 +375,7 @@ Ringle Music에 대한 Toy Project입니다.
        - success: true
      - error
        - Unauthorized : 패스워드가 틀릴 때
-   - 현재 유저가 좋아요한 음원 리스트 API -> **GET** /api/v1/user/like/music
+   - 현재 유저가 좋아요한 음원 리스트 API -> **GET** /api/v1/users/likes/musics
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -387,7 +387,7 @@ Ringle Music에 대한 Toy Project입니다.
        - musics: 음원의 정보를 담는 배열, 음원 id, 음원 이름, 아티스트 이름, 앨범 이름, 좋아요 갯수, 좋아요한 시간
      - error
        - 에러를 리턴하지 않음
-   - 현재 유저가 좋아요한 플리 리스트 API -> **GET** /api/v1/user/like/playlist
+   - 현재 유저가 좋아요한 플리 리스트 API -> **GET** /api/v1/users/likes/playlists
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
        2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
@@ -398,32 +398,32 @@ Ringle Music에 대한 Toy Project입니다.
        - playlists: 플리의 정보를 담은 배열, likes_count, 언제 좋아요하였는지, 플리 id, 플리 소유권자(유저/그룹)
      - error
        - 에러를 리턴하지 않음
-   - 유저 리스트 API -> **GET** /api/v1/user/list
+   - 유저 리스트 API -> **GET** /api/v1/users
      - parameters
-       1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
-       3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
-       4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
+       4. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
+       5. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       6. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
+       7. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
      - return
        - total_users_count: 총 유저 갯수
        - users: 유저들의 정보. id, name, created_at
      - error
        - 에러를 리턴하지 않음
-   - 회원가입 API -> **GET** /api/v1/user/signup
+   - 회원가입 API -> **GET** /api/v1/users/signup
      - parameters
-       1. (Require) email : 사용할 이메일 주소
-       2. (Require) name : 사용할 이름
-       3. (Require) password : 사용할 비밀번호
+       8. (Require) email : 사용할 이메일 주소
+       9. (Require) name : 사용할 이름
+       10. (Require) password : 사용할 비밀번호
      - return
        - jwt
        - user: 가입된 유저의 정보
      - error
        - Already signed. Please logout : 이미 로그인되어 있는 경우
        - Please use different Email address : 이미 사용중인 이메일인 경우
-   - 로그인 API -> **GET** /api/v1/user/signin
+   - 로그인 API -> **GET** /api/v1/users/signin
      - parameters
-       1. (Require) email : 이메일 주소
-       2. (Require) password : 비밀번호
+       11. (Require) email : 이메일 주소
+       12. (Require) password : 비밀번호
      - return
        - jwt
        - user: 유저의 정보

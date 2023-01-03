@@ -1,6 +1,6 @@
 module V1
     class GroupApi < Grape::API
-        resource :group do
+        resource :groups do
             params do
                 optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                 optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
@@ -60,7 +60,7 @@ module V1
                 end
 
 
-                resource :user do
+                resource :users do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                         optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0

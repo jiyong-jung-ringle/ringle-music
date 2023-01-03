@@ -1,6 +1,6 @@
 module V1
     class PlaylistApi < Grape::API
-        resource :playlist do
+        resource :playlists do
             params do
                 optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                 optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
@@ -59,7 +59,7 @@ module V1
                     }
                 end
 
-                resource :like do
+                resource :likes do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
                         optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
