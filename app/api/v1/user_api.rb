@@ -39,7 +39,7 @@ module V1
 
             resource :signup do
                 params do
-                    requires :email, type: String, values: {proc: ->(name) {name!=""}}
+                    requires :email, type: String, values: {proc: ->(name) {name!=""}}, regexp: URI::MailTo::EMAIL_REGEXP
                     requires :name, type: String, values: {proc: ->(name) {name!=""}}
                     requires :password, type: String, values: {proc: ->(password) {password!=""}}
                 end
@@ -52,7 +52,7 @@ module V1
 
             resource :signin do
                 params do
-                    requires :email, type: String, values: {proc: ->(name) {name!=""}}
+                    requires :email, type: String, values: {proc: ->(name) {name!=""}}, regexp: URI::MailTo::EMAIL_REGEXP
                     requires :password, type: String, values: {proc: ->(password) {password!=""}}
                 end
                 get do

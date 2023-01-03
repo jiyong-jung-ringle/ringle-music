@@ -7,6 +7,8 @@ class User < ApplicationRecord
     has_many :music_playlists
     
     validates_uniqueness_of :email
+    validates :name, :email, presence: true
+    validates :email, format: { with: URI::MailTo::EMAIL_REGEXP } 
     has_secure_password
 
     after_create UserCallbacks

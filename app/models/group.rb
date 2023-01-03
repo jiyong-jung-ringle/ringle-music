@@ -3,6 +3,7 @@ class Group < ApplicationRecord
 
     has_many :users, through: :user_groups
     has_one :playlist, as: :ownable, dependent: :destroy 
+    validates :name, presence: true
 
     after_create GroupCallbacks
 
