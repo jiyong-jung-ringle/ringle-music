@@ -10,6 +10,16 @@ module V1
             return @current_user = nil
         end
 
+        def current_user_likes(model)
+            @current_user_likes = UserService::UserLikes.new(model, current_user) unless @current_user_likes
+            return @current_user_likes
+        end
+        
+        def current_user_groups
+            @current_user_groups = UserService::UserGroups.new(current_user) unless @current_user_groups
+            return @current_user_groups
+        end
+
         def authenticate!
             error!('Unauthorized') unless current_user
         end

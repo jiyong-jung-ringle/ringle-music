@@ -10,18 +10,18 @@ module V1
             get do
                 authenticate!
                 users = FeedService::UsersGetter.call(params[:keyword], params[:filter], params[:page_number], params[:limit])
-                return {
-                    total_users_count: users[:total_users_count],
-                    users: users[:users]
-                }
+                
+                present :success, true
+                present :total_users_count, users[:total_users_count]
+                present :users, users[:users], with: Entities::UserEntity
             end
             resource :info do
                 get do
                     authenticate!
                     user_info = UserService::GetInfo::call(current_user)
-                    return {
-                        user: user_info
-                    }
+
+                    present :success, true
+                    present :user, user_info, with: Entities::UserEntity, with_full: true
                 end
 
                 resource :password do
@@ -32,9 +32,7 @@ module V1
                     patch do
                         authenticate_with_password!(params[:old_password])
                         error!("Cannot change password") unless UserService::ChangePassword.call(current_user, params[:new_password])
-                        return {
-                            success: true
-                        }
+                        present :success, true
                     end
                 end
 
@@ -46,9 +44,7 @@ module V1
                     patch do
                         authenticate_with_password!(params[:password])
                         error!("Cannot modify name") unless UserService::ChangeName.call(current_user, params[:name])
-                        return {
-                            success: true
-                        }
+                        present :success, true
                     end
                 end
             end
@@ -62,7 +58,7 @@ module V1
                 post do
                     error!("Already signned. Please logout") if authenticate?
                     error!("Please use different Email address") unless result = UserService::Signup.call(params[:email], params[:name], params[:password])
-                    return result
+                    present result
                 end
             end
 
@@ -74,7 +70,7 @@ module V1
                 get do
                     error!("Already signned. Please logout") if authenticate?
                     error!("Login Failed") unless result = UserService::Signin.call(params[:email], params[:password])
-                    return result
+                    present result
                 end
             end
 
@@ -89,10 +85,10 @@ module V1
                     get do
                         authenticate!
                         musics = FeedService::LikeMusicsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
-                        return {
-                            total_musics_count: musics[:total_musics_count],
-                            musics: musics[:musics]
-                        }
+                        
+                        present :success, true
+                        present :total_musics_count, musics[:total_musics_count]
+                        present :musics, musics[:musics], with: Entities::MusicEntity, with_liked: true, current_user_likes: current_user_likes(Music)
                     end
                 end
                 resource :playlists do
@@ -104,10 +100,10 @@ module V1
                     get do
                         authenticate!
                         playlists = FeedService::LikePlaylistsGetter.call(current_user, params[:filter], params[:page_number], params[:limit])
-                        return {
-                            total_playlists_count: playlists[:total_playlists_count],
-                            playlists: playlists[:playlists]
-                        }
+                        
+                        present :success, true
+                        present :total_playlists_count, playlists[:total_playlists_count]
+                        present :playlists, playlists[:playlists], with: Entities::PlaylistEntity, current_user_likes: current_user_likes(Playlist), current_user_groups: current_user_groups
                     end
                 end
             end
@@ -117,9 +113,9 @@ module V1
                     authenticate!
                     error!("User not found") unless user = User.find_by(id: params[:user_id])
                     user_info = UserService::GetInfo::call(user)
-                    return {
-                        user: user_info
-                    }
+                    
+                    present :success, true
+                    present :user, user_info, with: Entities::UserEntity, with_full: true
                 end
             end
 

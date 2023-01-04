@@ -22,23 +22,12 @@ module FeedService
         def get_musics
             musics_result = (@musics_ordered.
                 offset(@limit*@page_number).limit(@limit))
-            ids = musics_result.as_json.map{|v| v["id"]}
-            like_service = VirtualColumnService::IsLiked.new(@current_user, Music, ids)
             {
                 total_musics_count: Music.count,
-                musics: musics_result.as_json({
-                    only: [
-                        :id,
-                        :song_name,
-                        :artist_name,
-                        :album_name,
-                        :likes_count,
-                    ]
-                }).map { |json| 
-                    like_service.call(json, json["id"])
-                }
+                musics: musics_result
             }
         end
     
     end
 end
+

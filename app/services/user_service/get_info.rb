@@ -11,14 +11,7 @@ module UserService
 
         private
         def get_user_info
-            @current_user.as_json({
-                only: [
-                    :id,
-                    :name,
-                    :created_at,
-                    :email,
-                ]
-            })
+            @current_user
         end
 
     end

@@ -24,13 +24,7 @@ module FeedService
                 offset(@limit*@page_number).limit(@limit))
             {
                 total_users_count: User.count,
-                users: users_result.as_json({
-                    only: [
-                        :id,
-                        :name,
-                        :created_at,
-                    ]
-                })
+                users: users_result
             }
         end
         

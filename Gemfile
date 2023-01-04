@@ -79,3 +79,5 @@ gem "jwt", "~> 2.6"
 gem "openssl", "~> 3.1"
 
 gem "bcrypt", "~> 3.1"
+
+gem "grape-entity", "~> 0.10.2"

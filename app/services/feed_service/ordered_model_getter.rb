@@ -21,7 +21,7 @@ module FeedService
         end
 
         def get_ordered_model
-            scoring_condition = @keyword!=nil && @keyword!=""
+            scoring_condition = @keyword.present?
             order = case @filter
                 when OrderFilterStatus::RECENT
                     {}.merge!(@has_created_at ? {created_at: :desc} : {}, @has_likes_count ? {likes_count: :desc} : {})

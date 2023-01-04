@@ -123,8 +123,8 @@ Ringle Music에 대한 Toy Project입니다.
 
 - Application Service
   - Virtual_column(추가적인 Attribute를 만들어주는 서비스) -> ~~N+1 되는 것을 피하고자 직접 쿼리문 작성해서 하였는데 좋은 방법인지 모르겠습니다.~~  **ids를 통해 어느정도 쿼리문을 피하는 방향으로 해결**
-    - is_liked(api를 요청한 유저가 특정 Music 또는 playlist에 좋아요를 눌렀는지를 attribute "is_liked"에 추가해줌)
-    - is_joined(api를 요청한 유저가 특정 group에 가입되어 있는지를 attribute "is_joined"에 추가해줌)
+    - ~~is_liked(api를 요청한 유저가 특정 Music 또는 playlist에 좋아요를 눌렀는지를 attribute "is_liked"에 추가해줌)~~
+    - ~~is_joined(api를 요청한 유저가 특정 group에 가입되어 있는지를 attribute "is_joined"에 추가해줌)~~
     - get_similarity_score(keyword에 맞게 score를 계산해서 attribute "score"에 추가해줌. ordering 시 사용)
       - 정확도를 구현하기 어려워 MySQL Like + SOUNDS LIKE를 통해 구현하였는데, 이 역시 좋은 방법인지 모르겠습니다.
   - Feed Service(Feed 목록 검색 서비스)
@@ -174,6 +174,10 @@ Ringle Music에 대한 Toy Project입니다.
     - jwt_validator
       - jwt를 통해 user 정보 불러오기
   - User Service(유저 서비스)
+    - current_user_groups
+      - 유저가 속한 그룹 preload
+    - current_user_likes
+      - 유저가 속한 likes preload
     - change_name
       - 유저 이름 변경
     - change_password

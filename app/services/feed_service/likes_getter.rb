@@ -31,13 +31,7 @@ module FeedService
                 offset(@limit*@page_number).limit(@limit))
             {
                 total_likes_count: @likable.likes_count,
-                like_users: users_result.as_json({
-                    only: [
-                        :id,
-                        :name,
-                        :liked_at,
-                    ]
-                })
+                like_users: users_result
             }
         end
         

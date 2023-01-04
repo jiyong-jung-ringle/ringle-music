@@ -31,13 +31,7 @@ module FeedService
                 offset(@limit*@page_number).limit(@limit))
             {
                 total_users_count: @group.users_count,
-                users: users_result.as_json({
-                    only: [
-                        :id,
-                        :name,
-                        :joined_at,
-                    ]
-                })
+                users: users_result
             }
         end
     

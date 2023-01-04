@@ -21,29 +21,9 @@ module FeedService
         def get_playlists
             playlists_result = (@playlists_ordered.
                 offset(@limit*@page_number).limit(@limit))
-            ids = playlists_result.as_json.map{|v| v["id"]}
-            like_service = VirtualColumnService::IsLiked.new(@current_user, Playlist, ids)
             {
                 total_playlists_count: Playlist.count,
-                playlists: playlists_result.includes(:ownable).as_json({
-                    only: [
-                        :id,
-                        :likes_count,
-                        :musics_count,
-                        :ownable_type,
-                    ],
-                    include: { 
-                        ownable: {
-                            only: [
-                                :id, 
-                                :name,
-                                :users_count,
-                            ] 
-                        } 
-                    }
-                }).map { |json| 
-                    like_service.call(json, json["id"])
-                }
+                playlists: playlists_result.includes(:ownable)
             }
         end
 

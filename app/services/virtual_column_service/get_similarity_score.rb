@@ -7,23 +7,10 @@ module VirtualColumnService
             @attribute_names = attribute_names
         end
 
-        # def call
-        #     get_where_indicators
-        #     return @model
-        #     .select(@where_indicator)
-        # end
-
-        # private
-
-        # def get_where_indicators
-        #     @where_indicator = "`#{@model.table_name}`.*, MATCH(#{@attribute_names.map {|attribute_name| "#{attribute_name}"}.join(", ")}) AGAINST ('#{@string}' IN NATURAL LANGUAGE MODE) as score"
-        # end
-
         def call
             get_score_indicators
             get_select_indicator
-            return @model
-            .select(@select_indicator)
+            get_scoring_model 
         end
 
         private
@@ -33,13 +20,16 @@ module VirtualColumnService
         end
 
         def score_indicator(attribute_name)
-            "(#{attribute_name} SOUNDS LIKE '#{@string}')/4 +
-            ((#{attribute_name} LIKE '%#{@string}%')+('#{@string}' LIKE CONCAT('%', #{attribute_name}, '%'))+(#{attribute_name} LIKE '#{@string}'))*3/4"
+            "(LOWER(#{attribute_name}) SOUNDS LIKE LOWER('#{@string}'))/4 +
+            ((LOWER(#{attribute_name}) LIKE LOWER('%#{@string}%'))+(LOWER('#{@string}') LIKE LOWER(CONCAT('%', #{attribute_name}, '%')))+(LOWER(#{attribute_name}) LIKE LOWER('#{@string}')))*3/4"
         end
 
         def get_select_indicator
-            # @select_indicator = "`#{@model.table_name}`.*, #{@score_indicators} as score"
             @select_indicator = "#{@score_indicators} as score"
+        end
+
+        def get_scoring_model
+            @model.select(@select_indicator)
         end
 
     end

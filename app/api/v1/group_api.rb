@@ -10,10 +10,10 @@ module V1
             get do
                 authenticate!
                 groups = FeedService::GroupsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
-                return {
-                    total_groups_count: groups[:total_groups_count],
-                    groups: groups[:groups]
-                }
+
+                present :success, true
+                present :total_groups_count, groups[:total_groups_count]
+                present :groups, groups[:groups], with: Entities::GroupEntity, current_user_groups: current_user_groups
             end
 
             params do
@@ -23,7 +23,7 @@ module V1
             post do
                 authenticate!
                 error!("cannot make group") unless result = GroupService::CreateGroup.call(current_user, params[:name], params[:user_ids])
-                return result
+                present result
             end
 
             route_param :group_id, type: Integer do
@@ -31,17 +31,15 @@ module V1
                     authenticate!
                     error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
                     error!("Already joined") unless result = GroupService::JoinGroup.call(current_user, group, [])
-                    return {
-                        success: result[:"#{current_user.id}"]
-                    }
+                    
+                    present :success, result[:"#{current_user.id}"]
                 end
                 delete do
                     authenticate!
                     error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
                     error!("Not joined this group") unless result = GroupService::ExitGroup.call(current_user, group, [])
-                    return {
-                        success: result[:"#{current_user.id}"]
-                    }
+                    
+                    present :success, result[:"#{current_user.id}"]
                 end
                 params do
                     requires :name, type: String
@@ -51,9 +49,8 @@ module V1
                     error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
                     error!("Cannot modify group name") unless group.include_user?(user: current_user)
                     error!("Cannot change group name") unless GroupService::ChangeGroupName.call(current_user, group, params[:name])
-                    return {
-                        success: true
-                    }
+                    
+                    present :success, true
                 end
 
 
@@ -68,10 +65,10 @@ module V1
                         authenticate!
                         error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
                         users = FeedService::GroupUsersGetter.call(current_user, group, params[:keyword], params[:filter], params[:page_number], params[:limit])
-                        return {
-                            total_users_count: users[:total_users_count],
-                            users: users[:users]
-                        }
+
+                        present :success, true
+                        present :total_users_count, users[:total_users_count]
+                        present :users, users[:users], with: Entities::UserEntity, with_join: true
                     end
                 end
             end

@@ -21,9 +21,9 @@ module GroupService
                 @user_ids.map {|user_id|
                     success_users.merge!("#{user_id}": user_ids.include?(user_id))
                 }
-                {group_id: group.id, playlist_id: group.playlist.id,  success_users: success_users}
+                {success: true, group_id: group.id, playlist_id: group.playlist.id,  success_users: success_users}
             else
-                false
+                {success: false}
             end
         end
 

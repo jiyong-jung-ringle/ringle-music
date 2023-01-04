@@ -38,16 +38,7 @@ module FeedService
             
             {
                 total_musics_count: @user.likes.where(likable_type: @model.to_s).count,
-                musics: musics_result.as_json({
-                    only: [
-                        :id,
-                        :song_name,
-                        :artist_name,
-                        :album_name,
-                        :likes_count,
-                        :liked_at,
-                    ]
-                })
+                musics: musics_result
             }
         end
         
