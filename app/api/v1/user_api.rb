@@ -3,13 +3,13 @@ module V1
         resource :users do
             params do
                 optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                 optional :keyword, type: String
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
             end
             get do
                 authenticate!
-                users = FeedService::UsersGetter.call(params[:keyword], params[:filter], params[:offset], params[:limit])
+                users = FeedService::UsersGetter.call(params[:keyword], params[:filter], params[:page_number], params[:limit])
                 return {
                     total_users_count: users[:total_users_count],
                     users: users[:users]
@@ -82,13 +82,13 @@ module V1
                 resource :musics do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
                     get do
                         authenticate!
-                        musics = FeedService::LikeMusicsGetter.call(current_user, params[:keyword], params[:filter], params[:offset], params[:limit])
+                        musics = FeedService::LikeMusicsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
                         return {
                             total_musics_count: musics[:total_musics_count],
                             musics: musics[:musics]
@@ -98,12 +98,12 @@ module V1
                 resource :playlists do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR], default: FeedService::OrderFilterStatus::RECENT
                     end
                     get do
                         authenticate!
-                        playlists = FeedService::LikePlaylistsGetter.call(current_user, params[:filter], params[:offset], params[:limit])
+                        playlists = FeedService::LikePlaylistsGetter.call(current_user, params[:filter], params[:page_number], params[:limit])
                         return {
                             total_playlists_count: playlists[:total_playlists_count],
                             playlists: playlists[:playlists]

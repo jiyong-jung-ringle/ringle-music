@@ -3,13 +3,13 @@ module V1
         resource :musics do
             params do
                 optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                 optional :keyword, type: String
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
             end
             get do
                 authenticate!
-                musics = FeedService::MusicsGetter.call(current_user, params[:keyword], params[:filter], params[:offset], params[:limit])
+                musics = FeedService::MusicsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
                 return {
                     total_musics_count: musics[:total_musics_count],
                     musics: musics[:musics]
@@ -21,14 +21,14 @@ module V1
 
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
                     get do
                         authenticate!
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
-                        likes = FeedService::LikesGetter.call(current_user, music, params[:keyword], params[:filter], params[:offset], params[:limit])
+                        likes = FeedService::LikesGetter.call(current_user, music, params[:keyword], params[:filter], params[:page_number], params[:limit])
                         return {
                             total_likes_count: likes[:total_likes_count],
                             like_users: likes[:like_users]

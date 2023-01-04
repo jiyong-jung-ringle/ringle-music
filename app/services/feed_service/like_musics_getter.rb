@@ -1,11 +1,11 @@
 module FeedService
     class LikeMusicsGetter < ApplicationService
 
-        def initialize(user, keyword, filter, offset, limit)
+        def initialize(user, keyword, filter, page_number, limit)
             @keyword = keyword
             @filter = filter
             @limit = limit
-            @offset = offset
+            @page_number = page_number
             @user = user
             @model = Music
         end
@@ -34,7 +34,7 @@ module FeedService
 
         def get_musics
             musics_result = (@musics_ordered.
-                offset(@limit*@offset).limit(@limit))
+                offset(@limit*@page_number).limit(@limit))
             
             {
                 total_musics_count: @user.likes.where(likable_type: @model.to_s).count,

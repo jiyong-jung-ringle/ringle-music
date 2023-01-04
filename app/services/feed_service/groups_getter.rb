@@ -1,12 +1,12 @@
 module FeedService
     class GroupsGetter < ApplicationService
 
-        def initialize(current_user, keyword, filter, offset, limit)
+        def initialize(current_user, keyword, filter, page_number, limit)
             @current_user = current_user
             @keyword = keyword
             @filter = filter
             @limit = limit
-            @offset = offset
+            @page_number = page_number
         end
 
         def call
@@ -26,7 +26,7 @@ module FeedService
 
         def get_groups
             groups_result = (@groups_ordered.
-                offset(@limit*@offset).limit(@limit))
+                offset(@limit*@page_number).limit(@limit))
             ids = groups_result.as_json.map{|v| v["id"]}
             is_joined_service = VirtualColumnService::IsJoined.new(@current_user, ids)
 

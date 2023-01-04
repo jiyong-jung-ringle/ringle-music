@@ -1,10 +1,10 @@
 module FeedService
     class LikePlaylistsGetter < ApplicationService
 
-        def initialize(user, filter, offset, limit)
+        def initialize(user, filter, page_number, limit)
             @filter = filter
             @limit = limit
-            @offset = offset
+            @page_number = page_number
             @user = user
             @model = Playlist
         end
@@ -33,7 +33,7 @@ module FeedService
 
         def get_playlists
             musics_result = (@playlists_ordered.
-                offset(@limit*@offset).limit(@limit))
+                offset(@limit*@page_number).limit(@limit))
             ownable_ids = musics_result.as_json({
                 only: [
                     :ownable_type,

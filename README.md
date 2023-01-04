@@ -132,24 +132,24 @@ Ringle Music에 대한 Toy Project입니다.
     - ordered_model_getter(정렬된 model을 받아와줌)
       - get_similarity_score를 참고해서 정렬된 model을 return
     - musics_getter(음원 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 음원 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 음원 목록을 json 형식으로 return
       - 음원 목록 조회 API에서 사용됨
     - likes_getter(좋아요한 유저 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 특정 음원/플리에 좋아요한 유저들의 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 특정 음원/플리에 좋아요한 유저들의 목록을 json 형식으로 return
     - playlists_getter(플리 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 플리 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 플리 목록을 json 형식으로 return
     - playlist_musics_getter(플리 내 음원 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 특정 플리 내 음원 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 특정 플리 내 음원 목록을 json 형식으로 return
     - groups_getter(그룹 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 그룹 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 그룹 목록을 json 형식으로 return
     - group_users_getter(그룹 내 유저 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 그룹 내 유저 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 그룹 내 유저 목록을 json 형식으로 return
     - users_getter(유저 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 유저 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 유저 목록을 json 형식으로 return
     - like_musics_getter(좋아요한 음원 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 특정 유저가 좋아요한 음원 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 특정 유저가 좋아요한 음원 목록을 json 형식으로 return
     - like_playlists_getter(좋아요한 음원 목록)
-      - ordered_model_getter 및 offset, limit에 맞추어 특정 유저가 좋아요한 플리 목록을 json 형식으로 return
+      - ordered_model_getter 및 page_number, limit에 맞추어 특정 유저가 좋아요한 플리 목록을 json 형식으로 return
   - Like Service(좋아요 서비스)
     - create_like
       - 좋아요 등록 기능 수행
@@ -204,7 +204,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 음원 조회 API -> **GET** /api/v1/musics
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
        4. (Optional) filter : 최신순(recent), 인기순(popular), 정확도순(exact)으로 정렬해줌.
      - return
@@ -227,7 +227,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/musics/**{music_id}**/likes
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
        4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
        - 최신순은 **좋아요 누른 순서**로 정렬
@@ -241,7 +241,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 플리 리스트 조회 API -> **GET** /api/v1/playlists
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) filter : 최신순(recent), 인기순(popular)으로 정렬해줌.
      - return
        - total_playlists_count: 총 음원의 갯수
@@ -263,7 +263,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 좋아요 누른 유저 리스트 API -> **GET** /api/v1/playlists/**{playlist_id}**/likes
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
        4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
        - 최신순은 **좋아요 누른 순서**로 정렬
@@ -275,7 +275,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 플리 내 음원 조회 API -> **GET** /api/v1/playlists/**{playlist_id}**
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
        4. (Optional) filter : 최신순(recent), 인기순(popular), 정확도순(exact)으로 정렬해줌.
      - return
@@ -305,7 +305,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 그룹 리스트 조회 API -> **GET** /api/v1/groups
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 이름 검색 키워드
        4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
      - return
@@ -316,7 +316,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 그룹 내 유저 조회 API -> **GET** /api/v1/groups/**{group_id}**/users
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 이름 검색 키워드
        4. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
      - return
@@ -378,7 +378,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 현재 유저가 좋아요한 음원 리스트 API -> **GET** /api/v1/users/likes/musics
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) keyword : 검색 키워드. 음원 이름, 아티스트 이름, 앨범 이름 한번에 검색 가능
        4. (Optional) filter : 최신순(recent), 인기순(popular), 정확도순(exact)으로 정렬해줌.
           - 최신순은 좋아요 누른 순서
@@ -390,7 +390,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 현재 유저가 좋아요한 플리 리스트 API -> **GET** /api/v1/users/likes/playlists
      - parameters
        1. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       2. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       2. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        3. (Optional) filter : 최신순(recent), 인기순(popular)으로 정렬해줌.
           - 최신순은 좋아요 누른 순서
      - return
@@ -401,7 +401,7 @@ Ringle Music에 대한 Toy Project입니다.
    - 유저 리스트 API -> **GET** /api/v1/users
      - parameters
        4. (Optional) limit : Pagination에 사용. 최대 표시할 갯수, 기본값은 50
-       5. (Optional) offset : Pagination에 사용. 0부터 시작, 기본값은 0
+       5. (Optional) page_number : Pagination에 사용. 0부터 시작, 기본값은 0
        6. (Optional) keyword : 검색 키워드. 유저 이름으로 검색 가능
        7. (Optional) filter : 최신순(recent), 정확도순(exact)으로 정렬해줌.
      - return

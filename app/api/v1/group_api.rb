@@ -3,13 +3,13 @@ module V1
         resource :groups do
             params do
                 optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                 optional :keyword, type: String
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
             end
             get do
                 authenticate!
-                groups = FeedService::GroupsGetter.call(current_user, params[:keyword], params[:filter], params[:offset], params[:limit])
+                groups = FeedService::GroupsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
                 return {
                     total_groups_count: groups[:total_groups_count],
                     groups: groups[:groups]
@@ -60,14 +60,14 @@ module V1
                 resource :users do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
                     get do
                         authenticate!
                         error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
-                        users = FeedService::GroupUsersGetter.call(current_user, group, params[:keyword], params[:filter], params[:offset], params[:limit])
+                        users = FeedService::GroupUsersGetter.call(current_user, group, params[:keyword], params[:filter], params[:page_number], params[:limit])
                         return {
                             total_users_count: users[:total_users_count],
                             users: users[:users]

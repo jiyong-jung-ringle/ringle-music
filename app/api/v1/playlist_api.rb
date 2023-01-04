@@ -3,12 +3,12 @@ module V1
         resource :playlists do
             params do
                 optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR], default: FeedService::OrderFilterStatus::POPULAR
             end
             get do
                 authenticate!
-                playlists = FeedService::PlaylistsGetter.call(current_user, params[:filter], params[:offset], params[:limit])
+                playlists = FeedService::PlaylistsGetter.call(current_user, params[:filter], params[:page_number], params[:limit])
                 return {
                     total_playlists_count: playlists[:total_playlists_count],
                     playlists: playlists[:playlists]
@@ -18,14 +18,14 @@ module V1
             route_param :playlist_id, type: Integer do
                 params do
                     optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                    optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                    optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                     optional :keyword, type: String
                     optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                 end
                 get do
                     authenticate!
                     error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                    musics = FeedService::PlaylistMusicsGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:offset], params[:limit])
+                    musics = FeedService::PlaylistMusicsGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:page_number], params[:limit])
                     return {
                         total_musics_count: musics[:total_musics_count],
                         musics: musics[:musics]
@@ -59,14 +59,14 @@ module V1
                 resource :likes do
                     params do
                         optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :offset, type: Integer, values: { proc: ->(offset) { offset.positive? || offset==0 } }, default: 0
+                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
                     get do
                         authenticate!
                         error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                        likes = FeedService::LikesGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:offset], params[:limit])
+                        likes = FeedService::LikesGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:page_number], params[:limit])
                         return {
                             total_likes_count: likes[:total_likes_count],
                             like_users: likes[:like_users]

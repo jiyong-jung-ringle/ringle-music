@@ -1,12 +1,12 @@
 module FeedService
     class PlaylistMusicsGetter < ApplicationService
 
-        def initialize(current_user, playlist, keyword, filter, offset, limit)
+        def initialize(current_user, playlist, keyword, filter, page_number, limit)
             @current_user = current_user
             @keyword = keyword
             @filter = filter
             @limit = limit
-            @offset = offset
+            @page_number = page_number
             @playlist = playlist
         end
 
@@ -28,7 +28,7 @@ module FeedService
 
         def get_musics
             musics_result = (@musics_ordered.
-                offset(@limit*@offset).limit(@limit))
+                offset(@limit*@page_number).limit(@limit))
             ids = musics_result.as_json.map{|v| v["id"]}
             like_service = VirtualColumnService::IsLiked.new(@current_user, Music, ids)
             {

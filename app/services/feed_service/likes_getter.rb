@@ -1,12 +1,12 @@
 module FeedService
     class LikesGetter < ApplicationService
 
-        def initialize(current_user, likable, keyword, filter, offset, limit)
+        def initialize(current_user, likable, keyword, filter, page_number, limit)
             @current_user = current_user
             @keyword = keyword
             @filter = filter
             @limit = limit
-            @offset = offset
+            @page_number = page_number
             @likable = likable
         end
 
@@ -28,7 +28,7 @@ module FeedService
 
         def get_users
             users_result = (@users_ordered.
-                offset(@limit*@offset).limit(@limit))
+                offset(@limit*@page_number).limit(@limit))
             {
                 total_likes_count: @likable.likes_count,
                 like_users: users_result.as_json({

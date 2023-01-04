@@ -1,11 +1,11 @@
 module FeedService
     class UsersGetter < ApplicationService
 
-        def initialize(keyword, filter, offset, limit)
+        def initialize(keyword, filter, page_number, limit)
             @keyword = keyword
             @filter = filter
             @limit = limit
-            @offset = offset
+            @page_number = page_number
         end
 
         def call
@@ -21,7 +21,7 @@ module FeedService
 
         def get_users
             users_result = (@users_ordered.
-                offset(@limit*@offset).limit(@limit))
+                offset(@limit*@page_number).limit(@limit))
             {
                 total_users_count: User.count,
                 users: users_result.as_json({
