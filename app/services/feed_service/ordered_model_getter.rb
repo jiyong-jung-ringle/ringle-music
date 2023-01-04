@@ -11,8 +11,7 @@ module FeedService
 
         def call
             check_attributes
-            get_order
-            return @model_ordered
+            get_ordered_model
         end
 
         private
@@ -21,40 +20,17 @@ module FeedService
             @has_likes_count = @accepted_filters.include?(OrderFilterStatus::POPULAR)
         end
 
-        def get_order
-            order = {}
-            @order = (@keyword!=nil && @keyword!="") ?
-                case @filter
+        def get_ordered_model
+            scoring_condition = @keyword!=nil && @keyword!=""
+            order = case @filter
                 when OrderFilterStatus::RECENT
-                    order.merge!(created_at: :desc) if @has_created_at
-                    order.merge!(likes_count: :desc) if @has_likes_count
-                    order
+                    {}.merge!(@has_created_at ? {created_at: :desc} : {}, @has_likes_count ? {likes_count: :desc} : {})
                 when OrderFilterStatus::POPULAR
-                    order.merge!(likes_count: :desc) if @has_likes_count
-                    order.merge!(created_at: :desc) if @has_created_at
-                    order
+                    {}.merge!(@has_likes_count ? {likes_count: :desc} : {}, @has_created_at ? {created_at: :desc} : {})
                 else
-                    order.merge!(score: :desc)
-                    order.merge!(likes_count: :desc) if @has_likes_count
-                    order.merge!(created_at: :desc) if @has_created_at
-                    order
+                    {}.merge!(scoring_condition ? {score: :desc} : {}, @has_likes_count ? {likes_count: :desc} : {}, @has_created_at ? {created_at: :desc} : {})
                 end
-            :
-                case @filter
-                when OrderFilterStatus::RECENT
-                    order.merge!(created_at: :desc) if @has_created_at
-                    order.merge!(likes_count: :desc) if @has_likes_count
-                    order
-                when OrderFilterStatus::POPULAR
-                    order.merge!(likes_count: :desc) if @has_likes_count
-                    order.merge!(created_at: :desc) if @has_created_at
-                    order
-                else
-                    order.merge!(created_at: :desc) if @has_created_at
-                    order.merge!(likes_count: :desc) if @has_likes_count
-                    order
-                end
-            @model_ordered = ((@keyword!=nil && @keyword!="") ? VirtualColumnService::GetSimilarityScore.call(@model, @keyword, @attribute_names) : @model).order(@order)
+            (scoring_condition ? VirtualColumnService::GetSimilarityScore.call(@model, @keyword, @attribute_names) : @model).order(order)
         end
     
     end
