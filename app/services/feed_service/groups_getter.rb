@@ -17,7 +17,7 @@ module FeedService
 
         private
         def get_order
-            @groups_ordered = OrderedModelGetter.call(Group, @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
+            @groups_ordered = OrderedModelGetter.call(Group.select("`#{Group.table_name}`.*"), @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::EXACT], [:name])
         end
 
         def get_total
