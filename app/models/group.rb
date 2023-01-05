@@ -21,8 +21,7 @@ class Group < ApplicationRecord
 
     def change_name!(name:)
         begin
-            self.name = name
-            self.save!
+            self.update!(name: name)
             true
         rescue => e
             false

@@ -11,9 +11,9 @@ module V1
                 authenticate!
                 groups = FeedService::GroupsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
 
-                present :success, true
-                present :total_groups_count, groups[:total_groups_count]
-                present :groups, groups[:groups], with: Entities::Group, current_user_groups: current_user_groups
+                data = {total_groups_count: groups[:total_groups_count],
+                    users: (Entities::GroupBasic.represent groups[:groups], current_user_groups: current_user_groups)}
+                present data, with: Entities::Default, success: true
             end
 
             params do
@@ -23,23 +23,23 @@ module V1
             post do
                 authenticate!
                 error!("cannot make group") unless result = GroupService::CreateGroup.call(current_user, params[:name], params[:user_ids])
-                present result
+                present result, with: Entities::Default, success: true
             end
 
             route_param :group_id, type: Integer do
                 put do
                     authenticate!
                     error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
-                    error!("Already joined") unless result = GroupService::JoinGroup.call(current_user, group, [])
+                    error!("Already joined") unless join_group_user_ids = GroupService::JoinGroup.call(current_user, group, [])
                     
-                    present :success, result[:"#{current_user.id}"]
+                    present data={:success=> join_group_user_ids[:"#{current_user.id}"]}, with: Entities::Default, success: true
                 end
                 delete do
                     authenticate!
                     error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
-                    error!("Not joined this group") unless result = GroupService::ExitGroup.call(current_user, group, [])
+                    error!("Not joined this group") unless exit_group_user_ids = GroupService::ExitGroup.call(current_user, group, [])
                     
-                    present :success, result[:"#{current_user.id}"]
+                    present data={:success=> exit_group_user_ids[:"#{current_user.id}"]}, with: Entities::Default, success: true
                 end
                 params do
                     requires :name, type: String
@@ -50,7 +50,7 @@ module V1
                     error!("Cannot modify group name") unless group.include_user?(user: current_user)
                     error!("Cannot change group name") unless GroupService::ChangeGroupName.call(current_user, group, params[:name])
                     
-                    present :success, true
+                    present data={}, with: Entities::Default, success: true
                 end
 
 
@@ -65,10 +65,10 @@ module V1
                         authenticate!
                         error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
                         users = FeedService::GroupUsersGetter.call(current_user, group, params[:keyword], params[:filter], params[:page_number], params[:limit])
-
-                        present :success, true
-                        present :total_users_count, users[:total_users_count]
-                        present :users, users[:users], with: Entities::User, with_join: true
+                        
+                        data = {total_users_count: users[:total_users_count],
+                        users: (Entities::UserBasic.represent users[:users], with_join: true)}
+                        present data, with: Entities::Default, success: true
                     end
                 end
             end

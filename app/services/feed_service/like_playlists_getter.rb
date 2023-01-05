@@ -18,11 +18,21 @@ module FeedService
         private
         def get_liked_playlists
             @playlist_ids = @user.likes.where(likable_type: @model.to_s).pluck(:likable_id)
-            @playlists = Playlist.where(id: @playlist_ids)
+            @playlists = Playlist.where(id: @playlist_ids).joins(:likes)
+            .where("#{Like.table_name}.user_id=#{@user.id}")
+            .select("#{Playlist.table_name}.*, #{Like.table_name}.created_at AS liked_at")
         end
 
         def get_order
-            @playlists_ordered = OrderedModelGetter.call(@playlists, "", @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR], [])
+            order = case @filter
+            when OrderFilterStatus::RECENT
+                {}.merge!({liked_at: :desc}, {likes_count: :desc})
+            when OrderFilterStatus::POPULAR
+                {}.merge!({likes_count: :desc}, {liked_at: :desc})
+            else
+                {}
+            end
+            @playlists_ordered = @playlists.order(order)
         end
 
         def get_playlists

@@ -11,9 +11,9 @@ module V1
                 authenticate!
                 musics = FeedService::MusicsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
 
-                present :success, true
-                present :total_musics_count, musics[:total_musics_count]
-                present :musics, musics[:musics], with: Entities::Music, current_user_likes: current_user_likes(Music)
+                data = {total_musics_count: musics[:total_musics_count],
+                    musics: (Entities::Music.represent musics[:musics], current_user_likes: current_user_likes(Music))}
+                present data, with: Entities::Default, success: true
             end
 
             route_param :music_id, type: Integer do
@@ -30,9 +30,10 @@ module V1
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         likes = FeedService::LikesGetter.call(current_user, music, params[:keyword], params[:filter], params[:page_number], params[:limit])
 
-                        present :success, true
-                        present :total_likes_count, likes[:total_likes_count]
-                        present :like_users, likes[:like_users], with: Entities::User, with_like: true
+
+                        data = {total_likes_count: likes[:total_likes_count],
+                            like_users: (Entities::UserBasic.represent likes[:like_users], with_like: true)}
+                        present data, with: Entities::Default, success: true
                     end
 
                     post do
@@ -40,7 +41,7 @@ module V1
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         error!("Already liked") unless LikeService::CreateLike.call(current_user, music)
                         
-                        present :success, true
+                        present data={}, with: Entities::Default, success: true
                     end
 
                     delete do
@@ -48,7 +49,7 @@ module V1
                         error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         error!("Already unliked") unless LikeService::DeleteLike.call(current_user, music)
                         
-                        present :success, true
+                        present data={}, with: Entities::Default, success: true
                     end
                 end
             end
