@@ -2,8 +2,8 @@ module V1
     class PlaylistApi < Grape::API
         resource :playlists do
             params do
-                optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR], default: FeedService::OrderFilterStatus::POPULAR
             end
             get do
@@ -17,8 +17,8 @@ module V1
 
             route_param :playlist_id, type: Integer do
                 params do
-                    optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                    optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                    optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                    optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                     optional :keyword, type: String
                     optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                 end
@@ -55,8 +55,8 @@ module V1
 
                 resource :likes do
                     params do
-                        optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                        optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                        optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end

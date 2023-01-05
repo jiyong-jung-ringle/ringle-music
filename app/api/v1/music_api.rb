@@ -2,8 +2,8 @@ module V1
     class MusicApi < Grape::API
         resource :musics do
             params do
-                optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                 optional :keyword, type: String
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
             end
@@ -20,8 +20,8 @@ module V1
                 resource :likes do
 
                     params do
-                        optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                        optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                        optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end

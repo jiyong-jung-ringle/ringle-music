@@ -2,8 +2,8 @@ module V1
     class UserApi < Grape::API
         resource :users do
             params do
-                optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                 optional :keyword, type: String
                 optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
             end
@@ -26,8 +26,8 @@ module V1
 
                 resource :password do
                     params do
-                        requires :new_password, type: String, values: {proc: ->(password) {password!=""}}
-                        requires :old_password, type: String, values: {proc: ->(password) {password!=""}}
+                        requires :new_password, type: String, values: lambda {|new_password| new_password.present? }
+                        requires :old_password, type: String, values: lambda {|old_password| old_password.present? }
                     end
                     patch do
                         authenticate_with_password!(params[:old_password])
@@ -38,8 +38,8 @@ module V1
 
                 resource :name do
                     params do
-                        requires :name, type: String
-                        requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                        requires :name, type: String, values: lambda {|name| name.present? }
+                        requires :password, type: String, values: lambda {|password| password.present? }
                     end
                     patch do
                         authenticate_with_password!(params[:password])
@@ -51,9 +51,9 @@ module V1
 
             resource :signup do
                 params do
-                    requires :email, type: String, values: {proc: ->(name) {name!=""}}, regexp: URI::MailTo::EMAIL_REGEXP
-                    requires :name, type: String, values: {proc: ->(name) {name!=""}}
-                    requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                    requires :email, type: String, values: lambda {|email| email.present? }, regexp: URI::MailTo::EMAIL_REGEXP
+                    requires :name, type: String, values: lambda {|name| name.present? }
+                    requires :password, type: String, values: lambda {|password| password.present? }
                 end
                 post do
                     error!("Already signned. Please logout") if authenticate?
@@ -64,8 +64,8 @@ module V1
 
             resource :signin do
                 params do
-                    requires :email, type: String, values: {proc: ->(name) {name!=""}}, regexp: URI::MailTo::EMAIL_REGEXP
-                    requires :password, type: String, values: {proc: ->(password) {password!=""}}
+                    requires :email, type: String, values: lambda {|email| email.present? }, regexp: URI::MailTo::EMAIL_REGEXP
+                    requires :password, type: String, values: lambda {|password| password.present? }
                 end
                 get do
                     error!("Already signned. Please logout") if authenticate?
@@ -77,8 +77,8 @@ module V1
             resource :likes do
                 resource :musics do
                     params do
-                        optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                        optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                        optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                         optional :keyword, type: String
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR, FeedService::OrderFilterStatus::EXACT], default: FeedService::OrderFilterStatus::EXACT
                     end
@@ -93,8 +93,8 @@ module V1
                 end
                 resource :playlists do
                     params do
-                        optional :limit, type: Integer, values: { proc: ->(limit) { limit.positive? && limit <= 100 } }, default: 50
-                        optional :page_number, type: Integer, values: { proc: ->(page_number) { page_number.positive? || page_number==0 } }, default: 0
+                        optional :limit, type: Integer, values: lambda {|limit| limit.positive? && limit <= 100 }, default: 50
+                        optional :page_number, type: Integer, values: lambda {|page_number| page_number.positive? || page_number==0 }, default: 0
                         optional :filter, type: String, values: [FeedService::OrderFilterStatus::RECENT, FeedService::OrderFilterStatus::POPULAR], default: FeedService::OrderFilterStatus::RECENT
                     end
                     get do
