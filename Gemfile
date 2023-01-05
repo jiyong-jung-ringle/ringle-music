@@ -81,3 +81,11 @@ gem "openssl", "~> 3.1"
 gem "bcrypt", "~> 3.1"
 
 gem "grape-entity", "~> 0.10.2"
+
+gem "rubocop", "~> 1.42"
+
+gem "rubocop-rails", "~> 2.17"
+
+gem "rubocop-performance", "~> 1.15"
+
+gem "rubocop-ast", "~> 1.24"
