@@ -13,7 +13,7 @@ module V1
 
                 present :success, true
                 present :total_groups_count, groups[:total_groups_count]
-                present :groups, groups[:groups], with: Entities::GroupEntity, current_user_groups: current_user_groups
+                present :groups, groups[:groups], with: Entities::Group, current_user_groups: current_user_groups
             end
 
             params do
@@ -68,7 +68,7 @@ module V1
 
                         present :success, true
                         present :total_users_count, users[:total_users_count]
-                        present :users, users[:users], with: Entities::UserEntity, with_join: true
+                        present :users, users[:users], with: Entities::User, with_join: true
                     end
                 end
             end

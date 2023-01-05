@@ -1,5 +1,5 @@
 module Entities
-  class PlaylistEntity < Grape::Entity
+  class Playlist < Grape::Entity
     self.hash_access = :to_s
 
     expose :id, :likes_count, :musics_count, :ownable_type
@@ -7,9 +7,9 @@ module Entities
     expose :ownable do |playlist, options|
       case playlist.ownable_type
       when User.to_s
-        UserEntity.represent playlist.ownable
+        User.represent playlist.ownable
       when Group.to_s
-        GroupEntity.represent playlist.ownable, options.merge(current_user_groups: @current_user_groups)
+        Group.represent playlist.ownable, options.merge(current_user_groups: @current_user_groups)
       else
         nil
       end

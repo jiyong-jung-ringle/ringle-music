@@ -13,7 +13,7 @@ module V1
                 
                 present :success, true
                 present :total_users_count, users[:total_users_count]
-                present :users, users[:users], with: Entities::UserEntity
+                present :users, users[:users], with: Entities::User
             end
             resource :info do
                 get do
@@ -21,7 +21,7 @@ module V1
                     user_info = UserService::GetInfo::call(current_user)
 
                     present :success, true
-                    present :user, user_info, with: Entities::UserEntity, with_full: true
+                    present :user, user_info, with: Entities::User, with_full: true
                 end
 
                 resource :password do
@@ -88,7 +88,7 @@ module V1
                         
                         present :success, true
                         present :total_musics_count, musics[:total_musics_count]
-                        present :musics, musics[:musics], with: Entities::MusicEntity, with_liked: true, current_user_likes: current_user_likes(Music)
+                        present :musics, musics[:musics], with: Entities::Music, with_liked: true, current_user_likes: current_user_likes(Music)
                     end
                 end
                 resource :playlists do
@@ -103,7 +103,7 @@ module V1
                         
                         present :success, true
                         present :total_playlists_count, playlists[:total_playlists_count]
-                        present :playlists, playlists[:playlists], with: Entities::PlaylistEntity, current_user_likes: current_user_likes(Playlist), current_user_groups: current_user_groups
+                        present :playlists, playlists[:playlists], with: Entities::Playlist, current_user_likes: current_user_likes(Playlist), current_user_groups: current_user_groups
                     end
                 end
             end
@@ -115,7 +115,7 @@ module V1
                     user_info = UserService::GetInfo::call(user)
                     
                     present :success, true
-                    present :user, user_info, with: Entities::UserEntity, with_full: true
+                    present :user, user_info, with: Entities::User, with_full: true
                 end
             end
 

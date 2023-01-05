@@ -5,6 +5,7 @@ module V1
 
         version 'v1', using: :path
         helpers CurrentUserHelper
+        include ErrorHandlers
 
         namespace do
             mount MusicApi

@@ -13,7 +13,7 @@ module V1
 
                 present :success, true
                 present :total_musics_count, musics[:total_musics_count]
-                present :musics, musics[:musics], with: Entities::MusicEntity, current_user_likes: current_user_likes(Music)
+                present :musics, musics[:musics], with: Entities::Music, current_user_likes: current_user_likes(Music)
             end
 
             route_param :music_id, type: Integer do
@@ -32,7 +32,7 @@ module V1
 
                         present :success, true
                         present :total_likes_count, likes[:total_likes_count]
-                        present :like_users, likes[:like_users], with: Entities::UserEntity, with_like: true
+                        present :like_users, likes[:like_users], with: Entities::User, with_like: true
                     end
 
                     post do

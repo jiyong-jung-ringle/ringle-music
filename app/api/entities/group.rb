@@ -1,5 +1,5 @@
 module Entities
-  class GroupEntity < Grape::Entity
+  class Group < Grape::Entity
     self.hash_access = :to_s
 
     expose :id, :name, :users_count

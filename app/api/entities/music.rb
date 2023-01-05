@@ -1,5 +1,5 @@
 module Entities
-  class MusicEntity < Grape::Entity
+  class Music < Grape::Entity
     self.hash_access = :to_s
 
     expose :id, :song_name, :artist_name, :album_name, :likes_count
@@ -8,7 +8,7 @@ module Entities
     expose :liked_at, if: :with_liked
 
     expose :music_playlist_id, :added_at, if: :in_playlist 
-    expose :user, using: UserEntity, if: :in_playlist
+    expose :user, using: User, if: :in_playlist
     
     private
     def initialize(music, option = {})

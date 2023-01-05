@@ -1,5 +1,5 @@
 module Entities
-  class UserEntity < Grape::Entity
+  class User < Grape::Entity
     self.hash_access = :to_s
     
     expose :id, :name
