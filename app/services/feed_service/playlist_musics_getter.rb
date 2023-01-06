@@ -31,7 +31,7 @@ module FeedService
                 offset(@limit*@page_number).limit(@limit))
             {
                 total_musics_count: @playlist.musics_count,
-                musics: musics_result.includes(:user).as_json({include: :user})
+                musics: musics_result.includes(:user)
             }
         end
     end

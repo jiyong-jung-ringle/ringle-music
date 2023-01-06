@@ -26,9 +26,9 @@ module V1
                     authenticate!
                     error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                     musics = FeedService::PlaylistMusicsGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:page_number], params[:limit])
-
+                    
                     data = {total_musics_count: musics[:total_musics_count],
-                        musics: (Entities::Music.represent musics[:musics], in_playlist: true, current_user_likes: current_user_likes(Music))}
+                        musics: (Entities::MusicBasic.represent musics[:musics], in_playlist: true, current_user_likes: current_user_likes(Music))}
                     present data, with: Entities::Default, success: true
                 end
                 params do

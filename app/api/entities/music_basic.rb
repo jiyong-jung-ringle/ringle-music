@@ -8,7 +8,7 @@ module Entities
     expose :liked_at, if: :with_like
 
     expose :music_playlist_id, :added_at, if: :in_playlist 
-    expose :user, using: User, if: :in_playlist
+    expose :user, using: UserBasic, if: :in_playlist
     
     private
     def initialize(music, option = {})

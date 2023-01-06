@@ -4,12 +4,12 @@ class Playlist < ApplicationRecord
   has_many :likes, as: :likable, dependent: :destroy
   belongs_to :ownable, polymorphic: true
 
-  @@maximum_musics_count = 100
+  MAXIMUM_MUSIC_COUNTS = 100
 
   def append_musics!(user:, musics:)
     Playlist.transaction do
       MusicPlaylist.create!(
-            musics.map { |music|
+            musics.last(MAXIMUM_MUSIC_COUNTS).map { |music|
                   { music: music, playlist: self, user: user }
                 }
           )
@@ -38,8 +38,8 @@ class Playlist < ApplicationRecord
 
   def delete_old_musics!
     playlist_count = self.musics_count
-    if playlist_count > @@maximum_musics_count
-      target_musics = self.music_playlists.order(created_at: :asc).limit(playlist_count - @@maximum_musics_count)
+    if playlist_count > MAXIMUM_MUSIC_COUNTS
+      target_musics = self.music_playlists.order(created_at: :asc).limit(playlist_count - MAXIMUM_MUSIC_COUNTS)
       target_musics.destroy_all
     end
   end

@@ -12,7 +12,7 @@ module V1
                 musics = FeedService::MusicsGetter.call(current_user, params[:keyword], params[:filter], params[:page_number], params[:limit])
 
                 data = {total_musics_count: musics[:total_musics_count],
-                    musics: (Entities::Music.represent musics[:musics], current_user_likes: current_user_likes(Music))}
+                    musics: (Entities::MusicBasic.represent musics[:musics], current_user_likes: current_user_likes(Music))}
                 present data, with: Entities::Default, success: true
             end
 
