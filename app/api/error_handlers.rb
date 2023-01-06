@@ -3,11 +3,16 @@ module ErrorHandlers
 
   included do
     rescue_from :all do |e|
-      ENV["RAILS_ENV"] == "development" ? error!((Entities::Default.represent result = { error: e, backtrace: e.backtrace[0..([2, e.backtrace.length].min)] }, success: false)) : error!((Entities::Default.represent result = { error: "Internal Server Error : #{e}" }, success: false))
+      ENV["RAILS_ENV"] == "development" ? error!((Entities::Default.represent result = { error: e, backtrace: e.backtrace[0..([2, e.backtrace.length].min)] }, success: false), 500) : error!((Entities::Default.represent result = { error: "Internal Server Error" }, success: false), 500)
+    end
+
+    rescue_from SyntaxError do |e|
+      ENV["RAILS_ENV"] == "development" ? error!((Entities::Default.represent result = { error: e, backtrace: e.backtrace[0..([2, e.backtrace.length].min)] }, success: false), 500) : error!((Entities::Default.represent result = { error: "Internal Server Error" }, success: false), 500)
     end
 
     rescue_from Grape::Exceptions::ValidationErrors do |e|
-      error!((Entities::Default.represent e.to_h.symbolize_keys, success: false))
+      error!((Entities::Default.represent result={error: e}, success: false), 400)
+      error!(e, 400)
     end
 
     route :any, "*path" do

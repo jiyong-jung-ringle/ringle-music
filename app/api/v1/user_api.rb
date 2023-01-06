@@ -31,7 +31,7 @@ module V1
                     end
                     patch do
                         authenticate_with_password!(params[:old_password])
-                        error!("Cannot change password") unless UserService::ChangePassword.call(current_user, params[:new_password])
+                        error_text!("Cannot change password") unless UserService::ChangePassword.call(current_user, params[:new_password])
                         
                         present data={}, with: Entities::Default, success: true
                     end
@@ -44,7 +44,7 @@ module V1
                     end
                     patch do
                         authenticate_with_password!(params[:password])
-                        error!("Cannot modify name") unless UserService::ChangeName.call(current_user, params[:name])
+                        error_text!("Cannot modify name") unless UserService::ChangeName.call(current_user, params[:name])
                         
                         present data={}, with: Entities::Default, success: true
                     end
@@ -58,8 +58,8 @@ module V1
                     requires :password, type: String, values: lambda {|password| password.present? }
                 end
                 post do
-                    error!("Already signned. Please logout") if authenticate?
-                    error!("Please use different Email address") unless result = UserService::Signup.call(params[:email], params[:name], params[:password])
+                    error_text!("Already signned. Please logout") if authenticate?
+                    error_text!("Please use different Email address") unless result = UserService::Signup.call(params[:email], params[:name], params[:password])
                     
                     present result, with: Entities::Default, success: true
                 end
@@ -71,8 +71,8 @@ module V1
                     requires :password, type: String, values: lambda {|password| password.present? }
                 end
                 get do
-                    error!("Already signned. Please logout") if authenticate?
-                    error!("Login Failed") unless result = UserService::Signin.call(params[:email], params[:password])
+                    error_text!("Already signned. Please logout") if authenticate?
+                    error_text!("Login Failed") unless result = UserService::Signin.call(params[:email], params[:password])
                     
                     present result, with: Entities::Default, success: true
                 end
@@ -115,7 +115,7 @@ module V1
             route_param :user_id, type: Integer do
                 get do
                     authenticate!
-                    error!("User not found") unless user = User.find_by(id: params[:user_id])
+                    error_text!("User not found") unless user = User.find_by(id: params[:user_id])
                     user_info = UserService::GetInfo::call(user)
                     
                     data = {user: (Entities::UserBasic.represent user_info, with_full: true)}

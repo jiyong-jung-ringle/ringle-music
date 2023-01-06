@@ -1,5 +1,9 @@
 module V1
   module CurrentUserHelper
+    def error_text!(text, error_code = 400)
+      error!((Entities::Default.represent result = { error: text }, success: false), error_code)
+    end
+
     def current_user
       return @current_user if @current_user
       if request.headers["Authorization"]
@@ -18,12 +22,12 @@ module V1
     end
 
     def authenticate!
-      error!("Unauthorized") unless current_user
+      error_text!("Unauthorized", 401) unless current_user
     end
 
     def authenticate_with_password!(password)
-      error!("Unauthorized") unless current_user
-      error!("Password Invalid") unless current_user.authenticate(password)
+      error_text!("Unauthorized", 401) unless current_user
+      error_text!("Password Invalid", 401) unless current_user.authenticate(password)
     end
 
     def authenticate?

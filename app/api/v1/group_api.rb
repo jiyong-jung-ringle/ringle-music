@@ -22,22 +22,22 @@ module V1
             end
             post do
                 authenticate!
-                error!("cannot make group") unless result = GroupService::CreateGroup.call(current_user, params[:name], params[:user_ids])
+                error_text!("cannot make group") unless result = GroupService::CreateGroup.call(current_user, params[:name], params[:user_ids])
                 present result, with: Entities::Default, success: true
             end
 
             route_param :group_id, type: Integer do
                 put do
                     authenticate!
-                    error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
-                    error!("Already joined") unless join_group_user_ids = GroupService::JoinGroup.call(current_user, group, [])
+                    error_text!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
+                    error_text!("Already joined") unless join_group_user_ids = GroupService::JoinGroup.call(current_user, group, [])
                     
                     present data={:success=> join_group_user_ids[:"#{current_user.id}"]}, with: Entities::Default, success: true
                 end
                 delete do
                     authenticate!
-                    error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
-                    error!("Not joined this group") unless exit_group_user_ids = GroupService::ExitGroup.call(current_user, group, [])
+                    error_text!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
+                    error_text!("Not joined this group") unless exit_group_user_ids = GroupService::ExitGroup.call(current_user, group, [])
                     
                     present data={:success=> exit_group_user_ids[:"#{current_user.id}"]}, with: Entities::Default, success: true
                 end
@@ -46,9 +46,9 @@ module V1
                 end
                 patch do
                     authenticate!
-                    error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
-                    error!("Cannot modify group name") unless group.include_user?(user: current_user)
-                    error!("Cannot change group name") unless GroupService::ChangeGroupName.call(current_user, group, params[:name])
+                    error_text!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
+                    error_text!("Cannot modify group name") unless group.include_user?(user: current_user)
+                    error_text!("Cannot change group name") unless GroupService::ChangeGroupName.call(current_user, group, params[:name])
                     
                     present data={}, with: Entities::Default, success: true
                 end
@@ -63,7 +63,7 @@ module V1
                     end
                     get do
                         authenticate!
-                        error!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
+                        error_text!("Group does not exist") unless group = Group.find_by(id: params[:group_id])
                         users = FeedService::GroupUsersGetter.call(current_user, group, params[:keyword], params[:filter], params[:page_number], params[:limit])
                         
                         data = {total_users_count: users[:total_users_count],

@@ -27,7 +27,7 @@ module V1
                     end
                     get do
                         authenticate!
-                        error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
+                        error_text!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
                         likes = FeedService::LikesGetter.call(current_user, music, params[:keyword], params[:filter], params[:page_number], params[:limit])
 
 
@@ -38,16 +38,16 @@ module V1
 
                     post do
                         authenticate!
-                        error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
-                        error!("Already liked") unless LikeService::CreateLike.call(current_user, music)
+                        error_text!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
+                        error_text!("Already liked") unless LikeService::CreateLike.call(current_user, music)
                         
                         present data={}, with: Entities::Default, success: true
                     end
 
                     delete do
                         authenticate!
-                        error!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
-                        error!("Already unliked") unless LikeService::DeleteLike.call(current_user, music)
+                        error_text!("Music does not exist") unless music = Music.find_by(id: params[:music_id])
+                        error_text!("Already unliked") unless LikeService::DeleteLike.call(current_user, music)
                         
                         present data={}, with: Entities::Default, success: true
                     end

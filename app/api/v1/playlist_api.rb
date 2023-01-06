@@ -24,7 +24,7 @@ module V1
                 end
                 get do
                     authenticate!
-                    error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                    error_text!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                     musics = FeedService::PlaylistMusicsGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:page_number], params[:limit])
                     
                     data = {total_musics_count: musics[:total_musics_count],
@@ -36,9 +36,9 @@ module V1
                 end
                 post do
                     authenticate!
-                    error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                    error!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
-                    error!("Cannot add musics") unless result = PlaylistService::AddMusic.call(current_user, playlist, params[:music_ids])
+                    error_text!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                    error_text!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
+                    error_text!("Cannot add musics") unless result = PlaylistService::AddMusic.call(current_user, playlist, params[:music_ids])
                     
                     present data={}, with: Entities::Default, success: true
                 end
@@ -47,9 +47,9 @@ module V1
                 end
                 delete do
                     authenticate!
-                    error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                    error!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
-                    error!("Cannot delete musics") unless result = PlaylistService::DeleteMusic.call(current_user, playlist, params[:music_ids])
+                    error_text!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                    error_text!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
+                    error_text!("Cannot delete musics") unless result = PlaylistService::DeleteMusic.call(current_user, playlist, params[:music_ids])
                     
                     present data={}, with: Entities::Default, success: true
                 end
@@ -63,7 +63,7 @@ module V1
                     end
                     get do
                         authenticate!
-                        error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                        error_text!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
                         likes = FeedService::LikesGetter.call(current_user, playlist, params[:keyword], params[:filter], params[:page_number], params[:limit])
 
                         data = {total_likes_count: likes[:total_likes_count],
@@ -73,16 +73,16 @@ module V1
 
                     post do
                         authenticate!
-                        error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                        error!("Already liked") unless LikeService::CreateLike.call(current_user, playlist)
+                        error_text!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                        error_text!("Already liked") unless LikeService::CreateLike.call(current_user, playlist)
                         
                         present data={}, with: Entities::Default, success: true
                     end
 
                     delete do
                         authenticate!
-                        error!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
-                        error!("Already unliked") unless LikeService::DeleteLike.call(current_user, playlist)
+                        error_text!("Playlist does not exist") unless playlist = Playlist.find_by(id: params[:playlist_id])
+                        error_text!("Already unliked") unless LikeService::DeleteLike.call(current_user, playlist)
                         
                         present data={}, with: Entities::Default, success: true
                     end
