@@ -140,13 +140,7 @@ Ringle Music에 대한 Toy Project입니다.
             - select 문을 통해 sounds like, like를 통해 정확도 score를 계산하고, score가 높은 순으로 정렬
           - ex) 유저에서 '철수'를 검색했을 때
 
-      ``` SELECT `users`.*,     
-        (LOWER(`users`.`name`) SOUNDS LIKE LOWER(`철수`)) / 4 +    
-        ((LOWER(`users`.`name`) LIKE LOWER(CONCAT('%', `철수`, '%'))) +     
-        (LOWER(`철수`) LIKE LOWER(CONCAT(`%`, `users`.`name`, `%`))) +     
-        (LOWER(name) LIKE LOWER(`철수`))) * 3 / 4 as `score` 
-        FROM `users` 
-        ORDER BY `score` DESC ```
+      ``` SELECT `users`.*, (LOWER(`users`.`name`) SOUNDS LIKE LOWER(`철수`)) / 4 + ((LOWER(`users`.`name`) LIKE LOWER(CONCAT('%', `철수`, '%'))) + (LOWER(`철수`) LIKE LOWER(CONCAT(`%`, `users`.`name`, `%`))) + (LOWER(name) LIKE LOWER(`철수`))) * 3 / 4 as `score` FROM `users` ORDER BY `score` DESC ```
 
     - Feed Service(Feed 목록 검색 서비스)
       - order_filter_status(정렬 status 관리; 최신순:recent, 정확도순:exact, 인기순:popular)
@@ -468,4 +462,4 @@ Ringle Music에 대한 Toy Project입니다.
 
 # Concurrency Issue
 * Model 레벨에서 Concurrency를 해결할 수 있음을 가정할 수 있도록 Model level에서 concurrcency를 보장하고자 하였습니다.
-* 
+* 개인 유저의 설정은 고려하지 않고, group, playlist와 같이 다양한 유저가 접근할 수 있는 리소스에 대해 lock을 활용해 concurrency problem을 방지하고자 함.
