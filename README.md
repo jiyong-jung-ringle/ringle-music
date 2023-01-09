@@ -60,6 +60,8 @@ Ringle Music에 대한 Toy Project입니다.
 
 ## 모델링
 
+![diagram](./diagram.png)
+
 - [x] User
   - Attribute:
     - name(유저명), password_digest(bcrypt 방식으로 암호화), email(로그인 시 사용)
