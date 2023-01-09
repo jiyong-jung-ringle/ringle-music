@@ -8,14 +8,17 @@ class Playlist < ApplicationRecord
 
   def append_musics!(user:, musics:)
     Playlist.transaction do
+      self.lock!
       MusicPlaylist.create!(
             musics.last(MAXIMUM_MUSIC_COUNTS).map { |music|
                   { music: music, playlist: self, user: user }
                 }
           )
       self.delete_old_musics!
+      musics.ids
+        rescue => e
+          return []
     end
-    musics.ids
   end
 
   def append_music!(user:, music:)
@@ -23,13 +26,16 @@ class Playlist < ApplicationRecord
   end
 
   def delete_musics!(music_ids:)
-    music_playlists = self.music_playlists.where(id: music_ids)
-    music_playlist_ids = music_playlists.ids
-    return false unless music_playlists.exists?
     Playlist.transaction do
+      self.lock!
+      music_playlists = self.music_playlists.where(id: music_ids)
+      music_playlist_ids = music_playlists.ids
+      return false unless music_playlists.exists?
       music_playlists.destroy_all
+      music_playlist_ids
+    rescue => e
+      return []
     end
-    music_playlist_ids
   end
 
   def delete_music!(user:, music_id:)

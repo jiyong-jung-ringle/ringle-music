@@ -11,7 +11,7 @@ module ErrorHandlers
     end
 
     rescue_from Grape::Exceptions::ValidationErrors do |e|
-      error!((Entities::Default.represent result={error: e}, success: false), 400)
+      error!((Entities::Default.represent result = { error: e }, success: false), 400)
       error!(e, 400)
     end
 

@@ -20,7 +20,7 @@ module PlaylistService
                 @music_ids.map {|music_id|
                     success.merge!("#{music_id}": append_music_ids.include?(music_id))
                 }
-                success
+                p success
             else
                 false
             end

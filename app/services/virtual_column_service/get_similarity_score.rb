@@ -2,7 +2,7 @@ module VirtualColumnService
   class GetSimilarityScore < ApplicationService
     def initialize(model, string, attribute_names)
       @model = model
-      @sanitized_string = ActiveRecord::Base.connection.quote(string) # Prevent SQL injection
+      @sanitized_string = ActiveRecord::Base.connection.quote(string.squish) # Prevent SQL injection
       @attribute_names = attribute_names
     end
 

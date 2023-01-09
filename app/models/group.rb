@@ -25,7 +25,10 @@ class Group < ApplicationRecord
   end
 
   def append_users!(users:)
+    self.lock!
     self.users << users
+  rescue => e
+    []
   end
 
   def append_user!(user:)
@@ -33,6 +36,7 @@ class Group < ApplicationRecord
   end
 
   def delete_users!(user_ids:)
+    self.lock!
     user_groups = self.user_groups.where(user_id: user_ids)
     deleted_user_ids = self.users.where(id: user_ids).ids
     return false unless user_groups.exists?
@@ -41,6 +45,8 @@ class Group < ApplicationRecord
       self.delete_group! if self.users_count <= 0
     end
     deleted_user_ids
+  rescue => e
+    []
   end
 
   def delete_user!(user_id:)
@@ -48,6 +54,9 @@ class Group < ApplicationRecord
   end
 
   def include_user?(user:)
+    self.lock!
     self.users.include?(user)
+  rescue => e
+    false
   end
 end

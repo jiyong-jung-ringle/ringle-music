@@ -126,84 +126,108 @@ Ringle Music에 대한 Toy Project입니다.
 - Application Service
   - Virtual_column(추가적인 Attribute를 만들어주는 서비스) -> ~~N+1 되는 것을 피하고자 직접 쿼리문 작성해서 하였는데 좋은 방법인지 모르겠습니다.~~  **ids를 통해 어느정도 쿼리문을 피하는 방향으로 해결**
     - ~~is_liked(api를 요청한 유저가 특정 Music 또는 playlist에 좋아요를 눌렀는지를 attribute "is_liked"에 추가해줌)~~
+      - user_likes 서비스로 대체 : sql를 생으로 사용하는 것은 확장성에 있어 문제될 수 있을 것이라 생각. 그러나 성능이 많이 떨어진다면 Arel sql을 통해 "확장 가능한" sql을 작성할 수 있을 것 같습니다. 
+      - is_liked 및 is_joined가 grape entity, 즉 output 딴에서 자동으로 입력될 수 있도록 하고자 할 때 user_likes 및 user_groups를 사용하는 것이 낫다고 판단했습니다.
     - ~~is_joined(api를 요청한 유저가 특정 group에 가입되어 있는지를 attribute "is_joined"에 추가해줌)~~
+      - user_groups 서비스로 대체 : 위와 동일한 이슈
     - get_similarity_score(keyword에 맞게 score를 계산해서 attribute "score"에 추가해줌. ordering 시 사용)
       - 정확도를 구현하기 어려워 MySQL Like + SOUNDS LIKE를 통해 구현하였는데, 이 역시 좋은 방법인지 모르겠습니다.
-  - Feed Service(Feed 목록 검색 서비스)
-    - order_filter_status(정렬 status 관리; 최신순:recent, 정확도순:exact, 인기순:popular)
-    - ordered_model_getter(정렬된 model을 받아와줌)
-      - get_similarity_score를 참고해서 정렬된 model을 return
-    - musics_getter(음원 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 음원 목록을 json 형식으로 return
-      - 음원 목록 조회 API에서 사용됨
-    - likes_getter(좋아요한 유저 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 특정 음원/플리에 좋아요한 유저들의 목록을 json 형식으로 return
-    - playlists_getter(플리 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 플리 목록을 json 형식으로 return
-    - playlist_musics_getter(플리 내 음원 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 특정 플리 내 음원 목록을 json 형식으로 return
-    - groups_getter(그룹 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 그룹 목록을 json 형식으로 return
-    - group_users_getter(그룹 내 유저 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 그룹 내 유저 목록을 json 형식으로 return
-    - users_getter(유저 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 유저 목록을 json 형식으로 return
-    - like_musics_getter(좋아요한 음원 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 특정 유저가 좋아요한 음원 목록을 json 형식으로 return
-    - like_playlists_getter(좋아요한 음원 목록)
-      - ordered_model_getter 및 page_number, limit에 맞추어 특정 유저가 좋아요한 플리 목록을 json 형식으로 return
-  - Like Service(좋아요 서비스)
-    - create_like
-      - 좋아요 등록 기능 수행
-    - delete_like
-      - 좋아요 삭제 기능 수행
-  - Playlist Service(플레이리스트 서비스)
-    - add_music
-      - playlist 내 음원 추가 기능 수행
-    - delete_music
-      - playlist 내 음원 삭제 기능 수행
-  - Group Service(그룹 서비스)
-    - create_group
-      - 그룹 생성 기능 수행
-    - join_group
-      - 그룹 가입 기능 수행
-    - exit_group
-      - 그룹 탈퇴 기능 수행
-  - Auth Service(인증 서비스)
-    - jwt_creator
-      - 유저의 정보를 담는 jwt 생성
-    - jwt_encoder/decoder
-    - jwt_validator
-      - jwt를 통해 user 정보 불러오기
-  - User Service(유저 서비스)
-    - current_user_groups
-      - 유저가 속한 그룹 preload
-    - current_user_likes
-      - 유저가 속한 likes preload
-    - change_name
-      - 유저 이름 변경
-    - change_password
-      - 유저 패스워드 변경
-    - get_info
-      - 특정 유저 정보 불러오기
-    - signin
-      - 이메일/비밀번호를 통해 올바른 유저 정보 및 jwt 불러오기
-    - signup
-      - 이메일/비밀번호를 통해 유저 생성
-  - Auth Service(인증 서비스)
-    - jwt_creator
-      - 유저 정보를 토대로 jwt 생성
-    - jwt_encoder/decoder
-    - jwt_validator
-      - jwt를 통해 user 정보 불러오기
-  - 그 외
-    - model_preload
-      - 모델 중 일부를 **한번에** 불러오도록 할 수 있는 서비스
-        - where과 같이 사용할 수 있음
+        - 대체방안
+          - searchkick : gem을 활용해서 구현해보았으나 너무 불필요한 기능이 많고, 무거워서 소규모에서는 오히려 like보다 느렸음. 불필요하다 생각해서 다시 지움
+          - MATCH AGAINST : 구현해보았으나 유사도 검색을 지원하지 않아 다시 지움.
+        - 구현 방식:
+          - 어떤 column에 대해 검색 시
+            - select 문을 통해 sounds like, like를 통해 정확도 score를 계산하고, score가 높은 순으로 정렬
+          - ex) 유저에서 '철수'를 검색했을 때
 
-# **현재 구현된 API**
+      ``` SELECT `users`.*,     
+        (LOWER(`users`.`name`) SOUNDS LIKE LOWER(`철수`)) / 4 +    
+        ((LOWER(`users`.`name`) LIKE LOWER(CONCAT('%', `철수`, '%'))) +     
+        (LOWER(`철수`) LIKE LOWER(CONCAT(`%`, `users`.`name`, `%`))) +     
+        (LOWER(name) LIKE LOWER(`철수`))) * 3 / 4 as `score` 
+        FROM `users` 
+        ORDER BY `score` DESC ```
 
-2023.1.2일 기준
+    - Feed Service(Feed 목록 검색 서비스)
+      - order_filter_status(정렬 status 관리; 최신순:recent, 정확도순:exact, 인기순:popular)
+      - ordered_model_getter(정렬된 model을 받아와줌)
+        - get_similarity_score를 참고해서 정렬된 model을 return
+      - musics_getter(음원 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 음원 목록을 json 형식으로 return
+        - 음원 목록 조회 API에서 사용됨
+      - likes_getter(좋아요한 유저 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 특정 음원/플리에 좋아요한 유저들의 목록을 json 형식으로 return
+      - playlists_getter(플리 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 플리 목록을 json 형식으로 return
+      - playlist_musics_getter(플리 내 음원 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 특정 플리 내 음원 목록을 json 형식으로 return
+      - groups_getter(그룹 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 그룹 목록을 json 형식으로 return
+      - group_users_getter(그룹 내 유저 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 그룹 내 유저 목록을 json 형식으로 return
+      - users_getter(유저 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 유저 목록을 json 형식으로 return
+      - like_musics_getter(좋아요한 음원 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 특정 유저가 좋아요한 음원 목록을 json 형식으로 return
+      - like_playlists_getter(좋아요한 음원 목록)
+        - ordered_model_getter 및 page_number, limit에 맞추어 특정 유저가 좋아요한 플리 목록을 json 형식으로 return
+    - Like Service(좋아요 서비스)
+      - create_like
+        - 좋아요 등록 기능 수행
+      - delete_like
+        - 좋아요 삭제 기능 수행
+    - Playlist Service(플레이리스트 서비스)
+      - add_music
+        - playlist 내 음원 추가 기능 수행
+      - delete_music
+        - playlist 내 음원 삭제 기능 수행
+    - Group Service(그룹 서비스)
+      - create_group
+        - 그룹 생성 기능 수행
+      - join_group
+        - 그룹 가입 기능 수행
+      - exit_group
+        - 그룹 탈퇴 기능 수행
+    - Auth Service(인증 서비스)
+      - jwt_creator
+        - 유저의 정보를 담는 jwt 생성
+      - jwt_encoder/decoder
+      - jwt_validator
+        - jwt를 통해 user 정보 불러오기
+    - User Service(유저 서비스)
+      - user_groups
+        - 유저가 속한 그룹의 id 리스트 반환
+      - user_likes
+        - 유저가 속한 likes의 id 리스트 반환
+      - change_name
+        - 유저 이름 변경
+      - change_password
+        - 유저 패스워드 변경
+      - get_info
+        - 특정 유저 정보 불러오기
+      - signin
+        - 이메일/비밀번호를 통해 올바른 유저 정보 및 jwt 불러오기
+      - signup
+        - 이메일/비밀번호를 통해 유저 생성
+    - Auth Service(인증 서비스)
+      - jwt_creator
+        - 유저 정보를 토대로 jwt 생성
+      - jwt_encoder/decoder
+      - jwt_validator
+        - jwt를 통해 user 정보 불러오기
+
+### Grape Entity
+ - response는 Grape Entity를 활용하여 추후에 다른 코드를 작성하였을 때에도 동일한 양식으로 return될 수 있도록 하였습니다.
+ - 기본적으로 모든 API response는 default entity를 통합니다. default entity는 아래의 형식을 따릅니다.
+    
+    ```{success: true, data:{...}}```
+ - User, Music, Group, playlist에 대해 각각 entity가 있으며, Music 및 playlist에는 response에 유저가 좋아요를 눌렀는지에 대한 정보를 **알아서** 붙여주고, Group에는 response에 유저가 이 그룹에 가입되어있는지에 대한 정보를 **알아서** 붙여줍니다. 
+   - N+1 쿼리를 방지하고자 user_likes, user_groups service를 활용합니다.
+ - 각각의 entity는 조건에 맞게 return이 조금씩 다를 수 있습니다. 
+
+# **구현된 API**
+
+2023.1.9일 기준
 
 1. Music
 
@@ -436,3 +460,12 @@ Ringle Music에 대한 Toy Project입니다.
      - error
        - Already signed. Please logout : 이미 로그인되어 있는 경우
        - Login Failed : 이메일/비밀번호가 틀린 경우
+
+# Exception Handling
+* 모든 에러 케이스에 대해 success를 false로 return
+* development 환경이 아닌 경우에 대해 소스코드가 노출되는 일 없도록 Internel server error 사용
+* SQL injection을 방지하고자 검색 기능에 대해 sanitized string 사용
+
+# Concurrency Issue
+* Model 레벨에서 Concurrency를 해결할 수 있음을 가정할 수 있도록 Model level에서 concurrcency를 보장하고자 하였습니다.
+* 

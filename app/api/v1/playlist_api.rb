@@ -40,7 +40,7 @@ module V1
                     error_text!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
                     error_text!("Cannot add musics") unless result = PlaylistService::AddMusic.call(current_user, playlist, params[:music_ids])
                     
-                    present data={}, with: Entities::Default, success: true
+                    present data={success_music_ids: result}, with: Entities::Default, success: true
                 end
                 params do
                     requires :music_ids, type: Array[Integer]
@@ -51,7 +51,7 @@ module V1
                     error_text!("You cannot modify this playlist") unless playlist.include_user?(user: current_user)
                     error_text!("Cannot delete musics") unless result = PlaylistService::DeleteMusic.call(current_user, playlist, params[:music_ids])
                     
-                    present data={}, with: Entities::Default, success: true
+                    present data={removed_music_ids: result}, with: Entities::Default, success: true
                 end
 
                 resource :likes do

@@ -19,7 +19,7 @@ module GroupService
                 success = {}
                 user_ids = users.ids
                 @user_ids.map {|user_id|
-                    success.merge!("#{user_id}": user_ids.include?(user_id))
+                    success.merge!("#{user_id}": append_user_ids.include?(user_id))
                 }
                 success
             else
