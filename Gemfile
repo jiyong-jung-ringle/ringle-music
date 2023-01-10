@@ -89,3 +89,7 @@ gem "rubocop-rails", "~> 2.17"
 gem "rubocop-performance", "~> 1.15"
 
 gem "rubocop-ast", "~> 1.24"
+
+gem "searchkick", "~> 5.1"
+
+gem "opensearch-ruby", "~> 2.1"

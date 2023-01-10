@@ -1,33 +1,31 @@
 module FeedService
-    class MusicsGetter < ApplicationService
+  class MusicsGetter < ApplicationService
+    def initialize(current_user, keyword, filter, page_number, limit)
+      @current_user = current_user
+      @keyword = keyword
+      @filter = filter
+      @limit = limit
+      @page_number = page_number
+    end
 
-        def initialize(current_user, keyword, filter, page_number, limit)
-            @current_user = current_user
-            @keyword = keyword
-            @filter = filter
-            @limit = limit
-            @page_number = page_number
-        end
+    def call
+      get_order
+      get_musics
+    end
 
-        def call
-            get_order
-            get_musics
-        end
-
-        private
+      private
         def get_order
-            @musics_ordered = OrderedModelGetter.call(Music.select("`#{Music.table_name}`.*"), @keyword, @filter, [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT], [:song_name, :artist_name, :album_name])
+          @musics_ordered = SearchkickModelGetter.call(Music, @keyword, @filter,
+          [OrderFilterStatus::RECENT, OrderFilterStatus::POPULAR, OrderFilterStatus::EXACT],
+          [:song_name, :artist_name, :album_name],
+          @limit, @page_number)
         end
 
         def get_musics
-            musics_result = (@musics_ordered.
-                offset(@limit*@page_number).limit(@limit))
-            {
-                total_musics_count: Music.count,
-                musics: musics_result
-            }
+          {
+              total_musics_count: @musics_ordered[:total],
+              musics: @musics_ordered[:model]
+          }
         end
-    
-    end
+  end
 end
-

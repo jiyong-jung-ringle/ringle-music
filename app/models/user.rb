@@ -12,9 +12,11 @@ class User < ApplicationRecord
   has_secure_password
 
   after_create UserCallbacks
+  searchkick
 
   def self.create_user!(name:, email:, password:)
-    User.create!(name: name, email: email, password: password)
+    self.lock
+    self.create!(name: name, email: email, password: password)
   rescue => e
     nil
   end

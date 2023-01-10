@@ -6,6 +6,7 @@ class Group < ApplicationRecord
   validates :name, presence: true
 
   after_create GroupCallbacks
+  searchkick
 
   def self.create_group!(name:, users:)
     Group.create!(name: name, users: users)
