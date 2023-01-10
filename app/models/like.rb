@@ -5,19 +5,25 @@ class Like < ApplicationRecord
 
   def self.toggle_like!(user:, likable:)
     like = Like.find_by(user: user, likable: likable)
-    like ? like.destroy : Like.create!(user: user, likable: likable)
+    result = like ? like.destroy : Like.create!(user: user, likable: likable)
+    likable.reindex if likable.is_a? Music
+    result
   end
 
   def self.create_like!(user:, likable:)
     like = Like.find_by(user: user, likable: likable)
-    like ? nil : Like.create!(user: user, likable: likable)
+    result = like ? nil : Like.create!(user: user, likable: likable)
+    likable.reindex if likable.is_a? Music
+    result
   rescue => e
     nil
   end
 
   def self.destroy_like!(user:, likable:)
     like = Like.find_by(user: user, likable: likable)
-    like ? like.destroy : nil
+    result = like ? like.destroy : nil
+    likable.reindex if likable.is_a? Music
+    result
   rescue => e
     nil
   end

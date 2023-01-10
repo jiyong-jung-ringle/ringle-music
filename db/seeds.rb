@@ -11,7 +11,6 @@ require 'CSV'
 
 
 ## Parameters
-# THREAD_POOL = 10
 user_count = 300
 music_count = 1000000
 group_count = 30
@@ -29,20 +28,6 @@ Music.destroy_all
 
 ## Make Users
 puts "Making #{user_count} Users..."
-# threads=[]
-# (1..user_count).to_a.each_slice(user_count*1.0/THREAD_POOL == user_count/THREAD_POOL ? user_count/THREAD_POOL : user_count/THREAD_POOL+1).each do |jobs|
-#     threads << Thread.new do
-#         Rails.application.executor.wrap do
-#             ids = []
-#             jobs.each do |i|
-#                 user = User.create_user!(name: Faker::Name.name, email: "user_#{i}@gmail.com", password: "ringle#{i}")
-#                 ids << i if user.present?
-#             end
-#             p jobs - ids if (jobs - ids).present?
-#         end
-#     end
-# end
-# threads.map(&:join)
 (1..user_count).each do |i|
     musics = []
     User.create_user!(name: Faker::Name.name, email: "user_#{i}@gmail.com", password: "ringle#{i}")
@@ -50,28 +35,6 @@ end
 
 ## Make Musics
 puts "Making #{music_count} Musics..."
-# sample_music_file =  Rails.root.join("config", "musics", "music.csv")
-# music_csvs = CSV.parse(File.read(sample_music_file), :headers=>true)
-# music_csv_sampled = music_csvs[0..(music_count-1)]
-# music_csv_sampled.map { |music_csv|
-#     music_csv = music_csv.to_hash
-#     Music.create_music!(song_name: music_csv["title"], artist_name: music_csv["artist_name"], album_name: music_csv["album_name"]) 
-# }
-# threads=[]
-# (1..music_count).to_a.each_slice(music_count*1.0/THREAD_POOL == music_count/THREAD_POOL ? music_count/THREAD_POOL : music_count/THREAD_POOL+1).each do |jobs|
-#     threads << Thread.new do
-#         Rails.application.executor.wrap do
-#             jobs.each_slice(1000).each do |batch|
-#                 musics = []
-#                 batch.each do |i|
-#                     musics << {song_name: "Music #{i}", artist_name: Faker::Artist.name, album_name: Faker::Music.album}
-#                 end
-#                 Music.insert_all(musics)
-#             end
-#         end
-#     end
-# end
-# threads.map(&:join)
 (1..music_count).each_slice(1000).each do |batch|
     musics = []
     batch.each do |i|
@@ -79,9 +42,16 @@ puts "Making #{music_count} Musics..."
     end
     Music.insert_all(musics)
 end
-puts "Reindexing #{music_count} Musics..."
-Music.reindex
-
+sample_music_file =  Rails.root.join("config", "musics", "music.csv")
+music_csvs = CSV.parse(File.read(sample_music_file), :headers=>true)
+music_csvs.each_slice(1000).each do |batch|
+    musics = []
+    batch.each do |music_csv|
+        music_csv = music_csv.to_hash
+        musics << {song_name: music_csv["title"], artist_name: music_csv["artist_name"], album_name: music_csv["album_name"]}
+    end
+    Music.insert_all(musics)
+end
 
 ## Make Groups
 puts "Making #{group_count} Groups..."
@@ -110,4 +80,6 @@ users.map { |user|
     }
 }
 
+puts "Reindexing #{music_count} Musics..."
+Music.reindex
 puts "Completed"

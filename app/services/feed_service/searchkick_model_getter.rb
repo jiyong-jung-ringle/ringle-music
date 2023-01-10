@@ -35,8 +35,11 @@ module FeedService
         end
 
         def get_scoring_model_ids
+          order = (@keyword ? { _score: :desc } : {}).merge!(@order).map do |k,v|
+            {"#{k}"=> v}.symbolize_keys!
+          end
           searchkick_model = @model.search(@keyword ? @keyword : "*", fields: @attribute_names,
-            limit: @limit, offset: @limit * @page_number, order: (@keyword ? { _score: :desc } : {}).merge!(@order))
+            limit: @limit, offset: @limit * @page_number, order: order)
           @total_count = searchkick_model.total_count
           @scoring_mdoel_ids = searchkick_model.map(&:id)
         end

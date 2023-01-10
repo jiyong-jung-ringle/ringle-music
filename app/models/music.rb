@@ -5,9 +5,16 @@ class Music < ApplicationRecord
   has_many :likes, as: :likable, dependent: :destroy
   searchkick
 
+  after_create :reindex_music
+
+  def self.reindex_music
+    p "call"
+    music.reindex
+  end
+
   def self.create_music!(song_name:, artist_name:, album_name:)
     self.lock
-    self.create!(song_name: song_name, artist_name: artist_name, album_name: album_name)
+    Music.create!(song_name: song_name, artist_name: artist_name, album_name: album_name)
   rescue => e
     nil
   end

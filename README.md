@@ -14,7 +14,7 @@ Ringle Music에 대한 Toy Project입니다.
 - bundle install
 - rake db:create
 - rake db:migrate
-- rake db:seed(100명의 User, 1500개의 music, 30개의 group, 130개의 플레이리스트(100개의 User playlist, 30개의 group playlist), 랜덤 좋아요 추가 가능)
+- rake db:seed(100명의 User(지금은 300명), 1500개의 music(지금은 1,001,698개), 30개의 group, 130개의 플레이리스트(100개의 User playlist, 30개의 group playlist, 지금은 330개), 랜덤 좋아요 추가 가능)
 - pem 파일은 테스팅을 위해 ignore하지 않았습니다.
 - JWT는 RS256 방식을 사용하며, ssl 인증서를 key로 사용합니다.
 
@@ -126,7 +126,7 @@ Ringle Music에 대한 Toy Project입니다.
 - Application Service
   - Virtual_column(추가적인 Attribute를 만들어주는 서비스) -> ~~N+1 되는 것을 피하고자 직접 쿼리문 작성해서 하였는데 좋은 방법인지 모르겠습니다.~~  **ids를 통해 어느정도 쿼리문을 피하는 방향으로 해결**
     - ~~is_liked(api를 요청한 유저가 특정 Music 또는 playlist에 좋아요를 눌렀는지를 attribute "is_liked"에 추가해줌)~~
-      - user_likes 서비스로 대체 : sql를 생으로 사용하는 것은 확장성에 있어 문제될 수 있을 것이라 생각. 그러나 성능이 많이 떨어진다면 Arel sql을 통해 "확장 가능한" sql을 작성할 수 있을 것 같습니다. 
+      - user_likes 서비스로 대체 : sql를 생으로 사용하는 것은 다양한 기능 추가에 따른 확장성에 있어 문제될 수 있을 것이라 생각. 
       - is_liked 및 is_joined가 grape entity, 즉 output 딴에서 자동으로 입력될 수 있도록 하고자 할 때 user_likes 및 user_groups를 사용하는 것이 낫다고 판단했습니다.
     - ~~is_joined(api를 요청한 유저가 특정 group에 가입되어 있는지를 attribute "is_joined"에 추가해줌)~~
       - user_groups 서비스로 대체 : 위와 동일한 이슈
@@ -134,13 +134,22 @@ Ringle Music에 대한 Toy Project입니다.
       - 정확도를 구현하기 어려워 MySQL Like + SOUNDS LIKE를 통해 구현하였는데, 이 역시 좋은 방법인지 모르겠습니다.
         - 대체방안
           - searchkick : gem을 활용해서 구현해보았으나 너무 불필요한 기능이 많고, 무거워서 소규모에서는 오히려 like보다 느렸음. 불필요하다 생각해서 다시 지움
-          - MATCH AGAINST : 구현해보았으나 유사도 검색을 지원하지 않아 다시 지움.
+          - MATCH AGAINST : 구현해보았으나 유사도 검색을 지원하지 않아 다시 지움. => **근데 음원이 100만건 되니까 정말 빠르다고 느낌**
         - 구현 방식:
           - 어떤 column에 대해 검색 시
             - select 문을 통해 sounds like, like를 통해 정확도 score를 계산하고, score가 높은 순으로 정렬
           - ex) 유저에서 '철수'를 검색했을 때
 
       ``` SELECT `users`.*, (LOWER(`users`.`name`) SOUNDS LIKE LOWER(`철수`)) / 4 + ((LOWER(`users`.`name`) LIKE LOWER(CONCAT('%', `철수`, '%'))) + (LOWER(`철수`) LIKE LOWER(CONCAT(`%`, `users`.`name`, `%`))) + (LOWER(name) LIKE LOWER(`철수`))) * 3 / 4 as `score` FROM `users` ORDER BY `score` DESC ```
+        
+        => 추가(22.01.10)
+        
+          음원을 많이 추가한 경우 LIKE를 통한 sort는 약 7~10초가 걸림. Music list에 대해서만 **searchkick** gem을 활용하여 sorting할 수 있도록 함.
+        
+          => WHERE LIKE 구절을 사용하는 경우 '정확도순 검색'이 안되기 때문
+
+          음원을 제외한 나머지는 기존 방식대로 score에 따라 sort (로컬에서 500ms 이내로 결과 받음)
+
 
     - Feed Service(Feed 목록 검색 서비스)
       - order_filter_status(정렬 status 관리; 최신순:recent, 정확도순:exact, 인기순:popular)
@@ -463,3 +472,16 @@ Ringle Music에 대한 Toy Project입니다.
 # Concurrency Issue
 * Model 레벨에서 Concurrency를 해결할 수 있음을 가정할 수 있도록 Model level에서 concurrcency를 보장하고자 하였습니다.
 * 개인 유저의 설정은 고려하지 않고, group, playlist와 같이 다양한 유저가 접근할 수 있는 리소스에 대해 lock을 활용해 concurrency problem을 방지하고자 함.
+
+
+# Todo
+* '정확도순 검색' : 현재는 searchkick과 LIKE scoring을 통해 구현한 상태인데, 22.01.10 오후에 찾은 것이라 아직 불완전. 
+* Concurrcency Test : Multithread를 활용해 concurrency issue가 있는지 확인할 수 있는 test case를 제작하려 하였음. 10개의 thread를 활용해 test하고자 하였는데 ruby의 multithreading이 익숙하지 않아서 결국 완성하지 못함. 
+* General Test Case : 코드가 확장되는만큼 작동하던 기능이 작동하지 않게 되는 경우가 있는데 기본적인 테케를 만들 수 있으면 좋을 듯.
+* 프로덕션에서 필요하다고 생각하는 기능들인 어드민 기능, 유저 삭제 등과 같은 기능이 구현되어 있지 않음.
+* 아직은 부족한 Concurrency Issue
+  * 테스트의 부족으로 다양한 유저의 동시 접근 시 정상작동하는지 확인하지 못함
+  * Update뿐만 아니라 db를 읽는 과정에서도 concurrency issue는 발생할 수 있다고 생각. 
+  * 많은 유저가 이 프로덕션을 사용한다면 꼭 고쳐져야 할 부분
+* jwt를 사용하는데 jwt에 대해 아직 완전히 이해하지 못해서 보안이 의심됨.
+* 
