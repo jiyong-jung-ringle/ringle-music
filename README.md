@@ -484,4 +484,4 @@ Ringle Music에 대한 Toy Project입니다.
   * Update뿐만 아니라 db를 읽는 과정에서도 concurrency issue는 발생할 수 있다고 생각. 
   * 많은 유저가 이 프로덕션을 사용한다면 꼭 고쳐져야 할 부분
 * jwt를 사용하는데 jwt에 대해 아직 완전히 이해하지 못해서 보안이 의심됨.
-* 
+* 그 외 많은 것들...
